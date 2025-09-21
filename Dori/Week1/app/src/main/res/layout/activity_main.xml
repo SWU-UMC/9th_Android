@@ -92,7 +92,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="오늘의 하루는 어땠나요?"
-        android:textSize="20sp"
+        android:textSize="19sp"
         android:textStyle="bold"
 
         app:layout_constraintEnd_toEndOf="parent"
