@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    // 우표 별 색상
+    <color name="yellowFace">#FFEFB6</color>
+    <color name="blueFace">#CEE7F5</color>
+    <color name="purpleFace">#BEC3ED</color>
+    <color name="greenFace">#B1D3B9</color>
+    <color name="redFace">#EB8B8B</color>
+
+</resources>
