@@ -38,7 +38,7 @@
         android:id="@+id/backBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/outline_arrow_back_ios_24"
+        android:src="@drawable/btn_arrow_back"
         app:layout_constraintStart_toStartOf="@+id/guideline_vertical"
         app:layout_constraintBottom_toBottomOf="@+id/guideline_horizontal"
         />
@@ -80,7 +80,7 @@
         android:id="@+id/happyIv"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:src="@drawable/group_573_1"
+        android:src="@drawable/img_happy"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/subDescriptionTv"
@@ -106,7 +106,7 @@
         android:id="@+id/excitedIv"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:src="@drawable/group_574"
+        android:src="@drawable/img_excited"
 
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -132,7 +132,7 @@
         android:id="@+id/normalIv"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:src="@drawable/group_575"
+        android:src="@drawable/img_normal"
 
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -159,7 +159,7 @@
         android:id="@+id/nervousIv"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:src="@drawable/group_576"
+        android:src="@drawable/img_nervous"
 
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -184,7 +184,7 @@
         android:id="@+id/angryIv"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:src="@drawable/group_462"
+        android:src="@drawable/img_angry"
         android:layout_marginBottom="50dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
