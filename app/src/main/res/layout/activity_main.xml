@@ -35,7 +35,7 @@
         />
 
     <ImageView
-        android:id="@+id/backBtn"
+        android:id="@+id/iv_back_Btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/btn_arrow_back"
@@ -45,7 +45,7 @@
 
 
     <TextView
-        android:id="@+id/titleTv"
+        android:id="@+id/tv_main_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="오늘의 하루는 어땠나요?"
@@ -56,17 +56,17 @@
         app:layout_constraintTop_toBottomOf="@+id/title_guideline_horizontal" />
 
     <TextView
-        android:id="@+id/subTitleTv"
+        android:id="@+id/tv_main_sub_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="감정우표를 선택해주세요"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/titleTv" />
+        app:layout_constraintTop_toBottomOf="@id/tv_main_title" />
 
     <TextView
-        android:id="@+id/subDescriptionTv"
+        android:id="@+id/tv_main_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="선택한 감정우표를 기반으로 맞춤형 질문이 배달됩니다"
@@ -74,22 +74,22 @@
         android:layout_marginTop="18dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/subTitleTv" />
+        app:layout_constraintTop_toBottomOf="@id/tv_main_sub_title" />
 
     <ImageView
-        android:id="@+id/happyIv"
+        android:id="@+id/iv_emotion_happy"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:src="@drawable/img_happy"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/subDescriptionTv"
-        app:layout_constraintBottom_toTopOf="@+id/excitedIv"
+        app:layout_constraintTop_toBottomOf="@+id/tv_main_description"
+        app:layout_constraintBottom_toTopOf="@+id/iv_emotion_excited"
         app:layout_constraintVertical_chainStyle="spread"
         />
 
     <TextView
-        android:id="@+id/happyTv"
+        android:id="@+id/tv_emotion_happy"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="더없이 행복한 하루였어요"
@@ -98,24 +98,24 @@
         android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/happyIv"
+        app:layout_constraintTop_toBottomOf="@id/iv_emotion_happy"
         />
 
 
     <ImageView
-        android:id="@+id/excitedIv"
+        android:id="@+id/iv_emotion_excited"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:src="@drawable/img_excited"
 
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/happyIv"
-        app:layout_constraintBottom_toTopOf="@+id/normalIv"
+        app:layout_constraintTop_toBottomOf="@+id/iv_emotion_happy"
+        app:layout_constraintBottom_toTopOf="@+id/iv_emotion_normal"
         />
 
     <TextView
-        android:id="@+id/excitedTv"
+        android:id="@+id/tv_emotion_excited"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="들뜨고 흥분돼요"
@@ -124,24 +124,24 @@
         android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/excitedIv"
+        app:layout_constraintTop_toBottomOf="@id/iv_emotion_excited"
 
         />
 
     <ImageView
-        android:id="@+id/normalIv"
+        android:id="@+id/iv_emotion_normal"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:src="@drawable/img_normal"
 
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/excitedIv"
-        app:layout_constraintBottom_toTopOf="@id/nervousIv"
+        app:layout_constraintTop_toBottomOf="@+id/iv_emotion_excited"
+        app:layout_constraintBottom_toTopOf="@id/iv_emotion_nervous"
         />
 
     <TextView
-        android:id="@+id/normalTv"
+        android:id="@+id/tv_emotion_normal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="평범한 하루였어요"
@@ -150,25 +150,25 @@
         android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/normalIv"
+        app:layout_constraintTop_toBottomOf="@id/iv_emotion_normal"
         />
 
 
 
     <ImageView
-        android:id="@+id/nervousIv"
+        android:id="@+id/iv_emotion_nervous"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:src="@drawable/img_nervous"
 
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/normalIv"
-        app:layout_constraintBottom_toTopOf="@+id/angryIv"
+        app:layout_constraintTop_toBottomOf="@+id/iv_emotion_normal"
+        app:layout_constraintBottom_toTopOf="@+id/iv_emotion_angry"
         />
 
     <TextView
-        android:id="@+id/nervousTv"
+        android:id="@+id/tv_emotion_nervous"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="생각이 많아지고 불안해요"
@@ -177,23 +177,23 @@
         android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/nervousIv"
+        app:layout_constraintTop_toBottomOf="@id/iv_emotion_nervous"
         />
 
     <ImageView
-        android:id="@+id/angryIv"
+        android:id="@+id/iv_emotion_angry"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:src="@drawable/img_angry"
         android:layout_marginBottom="50dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nervousIv"
+        app:layout_constraintTop_toBottomOf="@+id/iv_emotion_nervous"
         app:layout_constraintBottom_toBottomOf="parent"
         />
 
     <TextView
-        android:id="@+id/angryTv"
+        android:id="@+id/tv_emotion_angry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="부글부글 화가 나요"
@@ -202,7 +202,7 @@
         android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/angryIv"
+        app:layout_constraintTop_toBottomOf="@id/iv_emotion_angry"
 
         />
 
