@@ -6,18 +6,15 @@
         android:icon="@drawable/btn_miniplayer_play" />
     <item
         android:id="@+id/diaryFragment"
-        android:title="일기쓰기"
+        android:title="둘러보기"
         android:icon="@drawable/btn_miniplayer_play" />
     <item
         android:id="@+id/calendarFragment"
-        android:title="달력"
+        android:title="검색"
         android:icon="@drawable/btn_miniplayer_play" />
     <item
         android:id="@+id/friendFragment"
-        android:title="친구"
+        android:title="보관함"
         android:icon="@drawable/btn_miniplayer_play" />
-    <item
-        android:id="@+id/mypageFragment"
-        android:title="마이페이지"
-        android:icon="@drawable/btn_miniplayer_play" />
+
 </menu>
