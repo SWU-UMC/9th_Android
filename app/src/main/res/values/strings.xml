@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">UMC_DORI_Week1</string>
+
+    <string name="emotion_clicked_message">%s 버튼이 클릭 됐습니다!</string>
+    <string name="emotion_happy">행복</string>
+    <string name="emotion_excited">들뜸</string>
+    <string name="emotion_normal">평범</string>
+    <string name="emotion_nervous">불안</string>
+    <string name="emotion_angry">분노</string>
 </resources>
