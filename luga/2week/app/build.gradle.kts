@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.a1week"
+    namespace = "com.example.a2week"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.a1week"
+        applicationId = "com.example.a2week"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -32,9 +32,6 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
-    }
-    buildFeatures{
-        viewBinding = true
     }
 }
 

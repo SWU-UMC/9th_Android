@@ -1,6 +1,7 @@
 package com.example.a1week
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -9,31 +10,35 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.a1week.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
+    // 뷰바인딩 객체 선언
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        // 바인딩 초기화
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // 클릭 이벤트
-        faceClick(R.id.yellowFace, R.id.yellowText, R.color.yellowFace)
-        faceClick(R.id.blueFace, R.id.blueText, R.color.blueFace)
-        faceClick(R.id.purpleFace, R.id.purpleText, R.color.purpleFace)
-        faceClick(R.id.greenFace, R.id.greenText, R.color.greenFace)
-        faceClick(R.id.redFace, R.id.redText, R.color.redFace)
+        faceClick(binding.ivFaceYellow, binding.tvFaceYellow, R.color.color_face_yellow)
+        faceClick(binding.ivFaceBlue, binding.tvFaceBlue, R.color.color_face_blue)
+        faceClick(binding.ivFacePurple, binding.tvFacePurple, R.color.color_face_purple)
+        faceClick(binding.ivFaceGreen, binding.tvFaceGreen, R.color.color_face_green)
+        faceClick(binding.ivFaceRed, binding.tvFaceRed, R.color.color_face_red)
     }
 
     // 클릭 이벤트 처리 함수
-    private fun faceClick(faceId : Int, textId : Int, colorId : Int){
-        val face = findViewById<ImageView>(faceId)
-        val faceText = findViewById<TextView>(textId)
+    private fun faceClick(faceView: ImageView, textView: TextView, colorId: Int){
+        faceView.setOnClickListener {
+            Log.d("DEBUG", "클릭됨: ${textView.text}")
 
-        face.setOnClickListener {
-            // 텍스트 색상 변경
-            faceText.setTextColor(ContextCompat.getColor(this, colorId))
-            // 토스트 메세지
-            val message = faceText.text.toString()
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+            textView.setTextColor(ContextCompat.getColor(this, colorId))
+            Toast.makeText(this, textView.text.toString(), Toast.LENGTH_SHORT).show()
         }
     }
 }
