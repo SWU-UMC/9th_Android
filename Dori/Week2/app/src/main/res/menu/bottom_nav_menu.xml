@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/homeFragment"
+        android:title="홈"
+        android:icon="@drawable/btn_miniplayer_play" />
+    <item
+        android:id="@+id/diaryFragment"
+        android:title="둘러보기"
+        android:icon="@drawable/btn_miniplayer_play" />
+    <item
+        android:id="@+id/calendarFragment"
+        android:title="검색"
+        android:icon="@drawable/btn_miniplayer_play" />
+    <item
+        android:id="@+id/friendFragment"
+        android:title="보관함"
+        android:icon="@drawable/btn_miniplayer_play" />
+
+</menu>
