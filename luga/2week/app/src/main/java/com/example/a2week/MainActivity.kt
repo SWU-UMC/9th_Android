@@ -2,7 +2,9 @@ package com.example.a2week
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -12,6 +14,17 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var binding : ActivityMainBinding
 
+    // SongActivity에서 결과값 받기
+    private val songActivityLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val albumTitle = result.data?.getStringExtra("albumTitle")
+                if (!albumTitle.isNullOrEmpty()) {
+                    Toast.makeText(this, "앨범명 : $albumTitle", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -20,11 +33,12 @@ class MainActivity : AppCompatActivity() {
         val song = Song(binding.mainMiniplayerTitleTv.text.toString(),
             binding.mainMiniplayerSingerTv.text.toString())
 
+        // SongActivity 실행
         binding.mainPlayerCl.setOnClickListener {
             val intent = Intent(this, SongActivity::class.java)
             intent.putExtra("title", song.title)
             intent.putExtra("singer", song.singer)
-            startActivity(intent)
+            songActivityLauncher.launch(intent)
         }
 
         initBottomNavigation()

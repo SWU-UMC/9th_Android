@@ -17,6 +17,21 @@ class AlbumFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentAlbumBinding.inflate(inflater, container, false)
+
+        // HomeActivity에서 데이터 전달받기
+        arguments?.let{bundle ->
+            val title = bundle.getString("albumTitle")
+            val singer = bundle.getString("albumSinger")
+
+            binding.albumMusicTitleTv.text = title
+            binding.albumSingerNameTv.text = singer
+        }
+
+        // 뒤로가기
+        binding.albumBackIv.setOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
+
         return binding.root
     }
 

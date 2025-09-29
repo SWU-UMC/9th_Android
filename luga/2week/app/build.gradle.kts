@@ -7,6 +7,10 @@ android {
     namespace = "com.example.a2week"
     compileSdk = 36
 
+    viewBinding{
+        enable = true
+    }
+
     defaultConfig {
         applicationId = "com.example.a2week"
         minSdk = 24
@@ -25,11 +29,6 @@ android {
                 "proguard-rules.pro"
             )
         }
-    }
-
-    buildFeatures{
-        viewBinding = true
-        dataBinding = true
     }
 
     compileOptions {

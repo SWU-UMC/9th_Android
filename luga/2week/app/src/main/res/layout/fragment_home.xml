@@ -103,8 +103,8 @@
 
         <TextView
             android:id="@+id/home_panel_album_title_tv"
-            android:layout_width="23dp"
-            android:layout_height="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
             android:text="Lady"
             android:textColor="@color/white"
