@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.lookerFragment -> {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.main_fragmentContainer, Locker())
+                        .replace(R.id.main_fragmentContainer, LockerFragment())
                         .commit()
                     true
                 }

@@ -11,8 +11,6 @@ import com.example.week2.databinding.FragmentHomeBinding
 import kotlin.jvm.java
 
 class HomeFragment : Fragment() {
-
-
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
