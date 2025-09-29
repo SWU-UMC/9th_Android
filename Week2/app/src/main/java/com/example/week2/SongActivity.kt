@@ -1,10 +1,7 @@
 package com.example.week2
 
-import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.week2.databinding.ActivityMainBinding
 import com.example.week2.databinding.ActivitySongBinding
 
 class SongActivity : AppCompatActivity() {

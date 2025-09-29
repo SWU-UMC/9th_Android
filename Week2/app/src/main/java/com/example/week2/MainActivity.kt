@@ -20,6 +20,5 @@ class MainActivity : AppCompatActivity() {
         binding.miniPlayer.mainPlayer.setOnClickListener {
             startActivity(Intent(this, SongActivity::class.java))
         }
-
     }
 }

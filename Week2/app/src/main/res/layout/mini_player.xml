@@ -5,7 +5,6 @@
     android:id="@+id/mainPlayer"
     android:layout_width="match_parent"
     android:layout_height="72dp"
-    android:background="?attr/colorSurface"
     android:padding="8dp">
 
     <ImageView
@@ -25,11 +24,13 @@
         android:layout_height="wrap_content"
         android:text="butter"
         android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="3dp"
         app:layout_constraintStart_toEndOf="@id/iv_album"
         app:layout_constraintTop_toTopOf="@id/iv_album"
         app:layout_constraintEnd_toStartOf="@id/btn_play_arrow"
-        android:ellipsize="end"
-        android:maxLines="1"/>
+        />
 
     <TextView
         android:id="@+id/tv_artist"
@@ -47,8 +48,8 @@
         android:id="@+id/btn_play_arrow"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:src="@drawable/btn_skip_previous"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/btn_miniplayer_previous"
         app:tint="?attr/colorOnSurface"
         app:layout_constraintEnd_toStartOf="@id/btn_play_arrow2"
         app:layout_constraintTop_toTopOf="parent"
@@ -58,8 +59,8 @@
         android:id="@+id/btn_play_arrow2"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:src="@drawable/btn_play_arrow"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/btn_miniplayer_play"
         app:tint="?attr/colorOnSurface"
         app:layout_constraintEnd_toStartOf="@id/btn_play_pause"
         app:layout_constraintTop_toTopOf="parent"
@@ -70,7 +71,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/btn_miniplayer_previous"
+        android:src="@drawable/btn_skip_next"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/btn_list"
         app:layout_constraintTop_toTopOf="parent"
@@ -80,8 +81,9 @@
         android:id="@+id/btn_list"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/btn_miniplayer_go_list"
+        android:src="@drawable/btn_queue_music"
         android:background="?attr/selectableItemBackgroundBorderless"
+        app:tint="?attr/colorOnSurface"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
