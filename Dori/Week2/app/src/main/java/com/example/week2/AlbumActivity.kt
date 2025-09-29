@@ -14,7 +14,7 @@ class AlbumActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
-        val backButton = binding.btnBack
+        val backButton = binding.albumBackIb
 
         backButton.setOnClickListener {
             finish()
