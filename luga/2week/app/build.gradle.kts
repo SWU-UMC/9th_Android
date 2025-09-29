@@ -7,6 +7,10 @@ android {
     namespace = "com.example.a2week"
     compileSdk = 36
 
+    viewBinding{
+        enable = true
+    }
+
     defaultConfig {
         applicationId = "com.example.a2week"
         minSdk = 24
@@ -26,6 +30,7 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
