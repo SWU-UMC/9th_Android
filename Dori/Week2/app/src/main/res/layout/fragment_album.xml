@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".AlbumActivity">
+    android:id="@+id/album"
+    tools:context=".AlbumFragment">
 
     <ImageButton
         android:id="@+id/album_back_ib"
