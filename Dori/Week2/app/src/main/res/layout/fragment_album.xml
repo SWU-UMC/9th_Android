@@ -7,6 +7,7 @@
     android:id="@+id/album"
     tools:context=".AlbumFragment">
 
+
     <ImageButton
         android:id="@+id/album_back_ib"
         android:layout_width="25dp"
@@ -19,7 +20,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
+    <ImageButton
+        android:id="@+id/song_more_ib"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginEnd="20dp"
+        android:background="@color/white"
+        android:scaleType="fitXY"
+        android:src="@drawable/btn_player_more"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/album_back_ib"
+        app:layout_constraintBottom_toBottomOf="@+id/album_back_ib"/>
 
     <ImageButton
         android:id="@+id/song_down_ib"
@@ -34,87 +45,72 @@
         app:layout_constraintTop_toTopOf="@+id/album_back_ib" />
 
 
-    <ImageButton
-        android:id="@+id/song_more_ib"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
 
-        android:background="@color/white"
-        android:scaleType="fitXY"
-        android:src="@drawable/btn_player_more"
-
+    <ImageView
+        android:id="@+id/iv_album_cover"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="20dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/img_album_exp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/album_back_ib"
-        app:layout_constraintBottom_toBottomOf="@+id/album_back_ib"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/album_back_ib"
+        tools:src="@drawable/img_album_exp" />
 
 
-    <androidx.core.widget.NestedScrollView
+
+    <TextView
+        android:id="@+id/tv_song_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="제목"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toBottomOf="@id/iv_album_cover"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+
+    <TextView
+        android:id="@+id/tv_artist_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="가수"
+        android:textSize="16sp"
+        android:textColor="?attr/colorSecondary"
+        android:layout_marginTop="4dp"
+        app:layout_constraintTop_toBottomOf="@id/tv_song_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/album_tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:tabIndicatorColor="@color/black"
+        app:tabSelectedTextColor="@color/black"
+        app:tabTextColor="@color/gray"
+        app:tabIndicatorFullWidth="false"
+        app:tabGravity="fill"
+        app:layout_constraintTop_toBottomOf="@id/tv_artist_name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/album_content_vp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/song_more_ib"
+        app:layout_constraintTop_toBottomOf="@id/album_tab_layout"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:paddingHorizontal="32dp">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="100dp">
-
-            <TextView
-                android:id="@+id/tv_song_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="제목"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:layout_marginTop="16dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
-            <TextView
-                android:id="@+id/tv_artist_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="가수"
-                android:textSize="16sp"
-                android:textColor="?attr/colorSecondary"
-                android:src="@drawable/btn_miniplayer_play"
-                android:drawablePadding="4dp"
-                app:layout_constraintTop_toBottomOf="@id/tv_song_title"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/iv_album_cover"/>
-
-
-            <ImageView
-                android:id="@+id/iv_album_cover"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_marginTop="12dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/img_album_exp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.496"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_artist_name"
-                tools:src="@drawable/img_album_exp" />
-
-            <ImageButton
-                android:id="@+id/iv_artist_more"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_marginStart="8dp"
-                android:background="@color/white"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_arrow_forward"
-                app:layout_constraintBottom_toBottomOf="@id/tv_artist_name"
-                app:layout_constraintStart_toEndOf="@id/tv_artist_name"
-                app:layout_constraintTop_toTopOf="@id/tv_artist_name" />
-
-
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -25,10 +25,16 @@ class HomeFragment : Fragment() {
 
 
         binding.bottomPannelAlbumImgIv.setOnClickListener {
+
+
+            val albumTitle = binding.bottemPannelAlbumTv.text.toString() // "Buttor"
+            val albumSinger = binding.bottemPannelAlbumSuvTv.text.toString() // "BTS"
+
             val fragment = AlbumFragment().apply {
                 arguments = Bundle().apply {
-                    putString("title", "노래제목")
-                    putString("singer", "가수이름")
+
+                    putString("title", albumTitle)
+                    putString("singer", albumSinger)
                 }
             }
 
