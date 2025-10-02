@@ -5,10 +5,14 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.week2.databinding.ActivitySongBinding
 
+
 class SongActivity : AppCompatActivity() {
 
     lateinit var binding: ActivitySongBinding
     private var albumTitle: String? = null
+
+
+    private var isPlaying: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,11 +30,28 @@ class SongActivity : AppCompatActivity() {
         albumTitle = title
 
 
+        binding.btnPlay.setOnClickListener {
+            togglePlayPause()
+        }
+
         binding.songDownIb.setOnClickListener {
             returnResultToMainActivity()
             finish()
         }
     }
+
+    private fun togglePlayPause() {
+        isPlaying = !isPlaying
+
+        if (isPlaying) {
+
+            binding.btnPlay.setImageResource(R.drawable.nugu_btn_pause_32)
+        } else {
+
+            binding.btnPlay.setImageResource(R.drawable.btn_miniplayer_play)
+        }
+    }
+
 
     private fun returnResultToMainActivity() {
         albumTitle?.let { title ->
