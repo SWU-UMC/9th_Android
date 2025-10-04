@@ -37,6 +37,7 @@ class SongActivity : AppCompatActivity() {
         binding.songPauseIv.setOnClickListener {
             setPlayerStatus(true)
         }
+
     }
 
     fun setPlayerStatus(isPlaying : Boolean){

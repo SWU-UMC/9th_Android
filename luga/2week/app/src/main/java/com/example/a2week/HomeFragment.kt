@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.viewpager2.widget.ViewPager2
 import com.example.a2week.databinding.FragmentHomeBinding
+import com.google.android.material.tabs.TabLayoutMediator
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -40,13 +42,18 @@ class HomeFragment : Fragment() {
                 .commitAllowingStateLoss()
         }
 
-        return binding.root
-    }
+        // ViewPager2 구현
+        val bannerAdapter = BannerVPAdapter(this)
+        bannerAdapter.addFragment(BannerFragment(R.drawable.img_first_album_default))
+        bannerAdapter.addFragment(BannerFragment(R.drawable.img_first_album_default))
 
-    private fun openAlbumFragment() {
-        val transaction = parentFragmentManager.beginTransaction()
-        transaction.replace(R.id.main_frm, AlbumFragment())
-        transaction.commitAllowingStateLoss()
+        binding.homePanelBackgroundIv.adapter = bannerAdapter
+        binding.homePanelBackgroundIv.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+
+        // 인디케이터 연결
+        TabLayoutMediator(binding.homePanelIndicator, binding.homePanelBackgroundIv) { _, _ -> }.attach()
+
+        return binding.root
     }
 
     override fun onDestroyView() {
