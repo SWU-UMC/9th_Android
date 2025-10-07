@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.a2week.databinding.FragmentSongBinding
 
 class SongFragment: Fragment() {
@@ -27,6 +29,20 @@ class SongFragment: Fragment() {
         }
         binding.songMixonTg.setOnClickListener {
             toggleMix()
+        }
+
+        // 수록곡 list
+        val songList = (1..10).map{i ->
+            SongListData(String.format("%02d", i), "노래 이름", "가수 이름")
+        }
+
+        val songAdapter = SongListAdapter(songList){ clickedSong ->
+            Toast.makeText(requireContext(), "${clickedSong.title} 선택됨", Toast.LENGTH_SHORT).show()
+        }
+
+        binding.songListRv.apply{
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = songAdapter
         }
 
         return binding.root

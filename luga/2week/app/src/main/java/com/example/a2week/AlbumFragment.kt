@@ -23,9 +23,11 @@ class AlbumFragment : Fragment() {
 
         // HomeActivity에서 데이터 전달받기
         arguments?.let{bundle ->
+            val img = bundle.getInt("albumImg")
             val title = bundle.getString("albumTitle")
             val singer = bundle.getString("albumSinger")
 
+            binding.albumAlbumIv.setImageResource(img)
             binding.albumMusicTitleTv.text = title
             binding.albumSingerNameTv.text = singer
         }
