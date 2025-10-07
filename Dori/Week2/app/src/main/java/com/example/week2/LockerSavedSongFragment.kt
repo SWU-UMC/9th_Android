@@ -27,19 +27,31 @@ class LockerSavedSongFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-
         val savedSongs = createDummySavedSongList()
 
 
         val savedSongRVAdapter = SavedSongRVAdapter(savedSongs)
-
-
         binding.lockerSavedSongRv.adapter = savedSongRVAdapter
 
         binding.lockerSavedSongRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
 
+        savedSongRVAdapter.setMyItemClickListener(object : SavedSongRVAdapter.MyItemClickListener {
+            override fun onSongClick(song: Song) {
+                Log.d("LockerSongClick", "Playing: ${song.title}")
+
+            }
+
+            override fun onMoreClick(position: Int) {
+
+                savedSongRVAdapter.removeItem(position)
+                Log.d("LockerDelete", "Item at position $position deleted.")
+            }
+        })
     }
+
+
+
 
     private fun createDummySavedSongList(): ArrayList<Song> {
         return ArrayList<Song>().apply {

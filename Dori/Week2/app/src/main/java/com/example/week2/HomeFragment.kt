@@ -52,10 +52,21 @@ class HomeFragment : Fragment() {
             override fun onRemoveAlbum(position: Int) {
                 albumRVAdapter.removeItem(position)
             }
+
+            override fun onPlayButtonClick(album: Album) {
+                val firstSong = album.Songs?.firstOrNull() ?: Song(album.title ?: "제목", album.singer ?: "가수")
+
+
+                (activity as MainActivity).updateMiniPlayer(
+                    firstSong.title,
+                    firstSong.singer
+                )
+            }
         })
 
         binding.homeTodayMusicAlbumRv.layoutManager = LinearLayoutManager(context,
             LinearLayoutManager.HORIZONTAL, false)
+
 
 
 

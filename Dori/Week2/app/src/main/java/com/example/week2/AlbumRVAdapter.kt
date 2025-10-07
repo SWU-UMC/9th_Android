@@ -1,4 +1,5 @@
 package com.example.week2
+
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -11,6 +12,7 @@ class AlbumRVAdapter(private val albumList: ArrayList<Album>) : RecyclerView.Ada
     interface MyItemClickListener{
         fun onItemClick(album: Album)
         fun onRemoveAlbum(position: Int)
+        fun onPlayButtonClick(album: Album)
     }
 
 
@@ -23,7 +25,6 @@ class AlbumRVAdapter(private val albumList: ArrayList<Album>) : RecyclerView.Ada
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): AlbumRVAdapter.ViewHolder {
         val binding: ItemAlbumBinding = ItemAlbumBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
-
         return ViewHolder(binding)
     }
 
@@ -39,9 +40,16 @@ class AlbumRVAdapter(private val albumList: ArrayList<Album>) : RecyclerView.Ada
 
 
     override fun onBindViewHolder(holder: AlbumRVAdapter.ViewHolder, position: Int) {
-        holder.bind(albumList[position])
-        holder.itemView.setOnClickListener { mItemClickListener.onItemClick(albumList[position]) }
-//
+        val album = albumList[position]
+        holder.bind(album)
+
+
+        holder.itemView.setOnClickListener { mItemClickListener.onItemClick(album) }
+
+
+        holder.binding.itemAlbumPlayImgIv.setOnClickListener {
+            mItemClickListener.onPlayButtonClick(album)
+        }
     }
 
 

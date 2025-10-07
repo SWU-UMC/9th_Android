@@ -4,7 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.week2.databinding.ItemSavedSongBinding
-import com.example.week2.R // R 클래스 사용을 위해 임시로 추가 (실제 프로젝트 구조에 따라 달라질 수 있음)
+
+import java.util.ArrayList
 
 class SavedSongRVAdapter(private val songList: ArrayList<Song>) :
     RecyclerView.Adapter<SavedSongRVAdapter.ViewHolder>() {
@@ -12,6 +13,7 @@ class SavedSongRVAdapter(private val songList: ArrayList<Song>) :
 
     interface MyItemClickListener {
         fun onSongClick(song: Song)
+        fun onMoreClick(position: Int)
     }
 
     private lateinit var mItemClickListener: MyItemClickListener
@@ -20,8 +22,15 @@ class SavedSongRVAdapter(private val songList: ArrayList<Song>) :
         mItemClickListener = itemClickListener
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
+    fun removeItem(position: Int) {
+        if (position in songList.indices) {
+            songList.removeAt(position)
+            notifyItemRemoved(position)
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemSavedSongBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
@@ -36,18 +45,21 @@ class SavedSongRVAdapter(private val songList: ArrayList<Song>) :
                 mItemClickListener.onSongClick(song)
             }
         }
+
+
+        holder.binding.itemSavedMoreIv.setOnClickListener {
+            if (::mItemClickListener.isInitialized) {
+                mItemClickListener.onMoreClick(holder.bindingAdapterPosition)
+            }
+        }
     }
 
     override fun getItemCount(): Int = songList.size
 
-
     inner class ViewHolder(val binding: ItemSavedSongBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(song: Song) {
-
             binding.itemSavedAlbumCoverIv.setImageResource(R.drawable.img_album_exp)
-
-
             binding.itemSavedSongTitleTv.text = song.title
             binding.itemSavedSingerTv.text = song.singer
 

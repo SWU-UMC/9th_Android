@@ -9,8 +9,6 @@ import com.example.week2.databinding.ActivityMainBinding
 import androidx.activity.result.contract.ActivityResultContracts
 
 
-
-
 class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding
@@ -33,13 +31,17 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val song = Song(binding.miniPlayer.tvTitle.text.toString(), binding.miniPlayer.tvArtist.text.toString())
-
+        // MiniPlayer의 초기 곡 정보 설정 (MiniPlayer.mainPlayer 레이아웃을 ActivityMainBinding이 include한다고 가정)
+        val initialSong = Song("Butter", "방탄소년단 (BTS)") // 초기값 설정
+        binding.miniPlayer.tvTitle.text = initialSong.title
+        binding.miniPlayer.tvArtist.text = initialSong.singer
 
         binding.miniPlayer.mainPlayer.setOnClickListener {
+            val currentSong = Song(binding.miniPlayer.tvTitle.text.toString(), binding.miniPlayer.tvArtist.text.toString())
+
             val intent = Intent(this, SongActivity::class.java).apply {
-                putExtra("title", song.title)
-                putExtra("singer", song.singer)
+                putExtra("title", currentSong.title)
+                putExtra("singer", currentSong.singer)
             }
 
             resultLauncher.launch(intent)
@@ -72,7 +74,14 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
 
 
+    fun updateMiniPlayer(title: String, singer: String) {
+
+        binding.miniPlayer.tvTitle.text = title
+        binding.miniPlayer.tvArtist.text = singer
+
+        Toast.makeText(this, "MiniPlayer Updated: $title - $singer", Toast.LENGTH_SHORT).show()
     }
 }
