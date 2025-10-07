@@ -10,7 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 
 
 
-data class Song(val title: String, val singer: String)
+
 class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding
