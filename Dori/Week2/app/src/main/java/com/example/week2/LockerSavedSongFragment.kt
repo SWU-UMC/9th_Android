@@ -1,54 +1,56 @@
 package com.example.week2
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.week2.databinding.FragmentLockerSavedSongBinding
+import java.util.ArrayList
 
 class LockerSavedSongFragment : Fragment() {
 
-
     private var _binding: FragmentLockerSavedSongBinding? = null
     private val binding get() = _binding!!
-
-
-    private val songData = arrayListOf(
-        Song("Butter", "BTS"),
-        Song("Lilac", "IU"),
-        Song("Next Level", "aespa"),
-        Song("Dun Dun Dance", "Oh My Girl"),
-        Song("Permission to Dance", "BTS"),
-        Song("Weekend", "Taeyeon"),
-        Song("Celebrity", "IU"),
-        Song("Hot Sauce", "NCT Dream")
-    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         _binding = FragmentLockerSavedSongBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
+
+        return binding.root
     }
 
     private fun setupRecyclerView() {
 
+        val savedSongs = createDummySavedSongList()
+
+
+        val savedSongRVAdapter = SavedSongRVAdapter(savedSongs)
+
+
+        binding.lockerSavedSongRv.adapter = savedSongRVAdapter
+
+        binding.lockerSavedSongRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+
+
+    }
+
+    private fun createDummySavedSongList(): ArrayList<Song> {
+        return ArrayList<Song>().apply {
+            add(Song("제목 없음 (보관함)", "저장된 아티스트 1", trackNumber = 1, isPlaying = false))
+            add(Song("Saved Song 2", "저장된 아티스트 2", trackNumber = 2, isPlaying = false))
+            add(Song("Saved Song 3", "저장된 아티스트 3", trackNumber = 3, isPlaying = true))
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
-
 }

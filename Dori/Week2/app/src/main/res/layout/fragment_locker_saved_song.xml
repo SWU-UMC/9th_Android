@@ -54,6 +54,18 @@
         android:clickable="true"
         android:focusable="true"/>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/locker_saved_song_rv"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@+id/btn_edit"
+        app:layout_constraintStart_toStartOf="parent"
+
+        tools:listitem="@layout/item_saved_song"/>
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
