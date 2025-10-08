@@ -30,7 +30,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val song = Song(binding.mainMiniplayerTitleTv.text.toString(),
+        val song = Song(
+            binding.mainMiniplayerTitleTv.text.toString(),
             binding.mainMiniplayerSingerTv.text.toString())
 
         // SongActivity 실행
@@ -42,6 +43,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         initBottomNavigation()
+    }
+
+    // 미니 플레이어 업데이트 메서드
+    fun updateMiniPlayer(song: Song) {
+        binding.mainMiniplayerTitleTv.text = song.title
+        binding.mainMiniplayerSingerTv.text = song.singer
     }
 
     // 하단 네비게이션 바 버튼 별 화면 전환 메서드

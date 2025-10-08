@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/song_list_order_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="01"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/song_list_title_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="노래 이름"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="@id/song_list_order_tv"
+        app:layout_constraintStart_toEndOf="@id/song_list_order_tv"
+        app:layout_constraintBottom_toBottomOf="@id/song_list_order_tv"/>
+
+    <TextView
+        android:id="@+id/song_list_singer_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="가수 이름"
+        android:textColor="@color/gray_color"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@id/song_list_title_tv"
+        app:layout_constraintTop_toBottomOf="@id/song_list_title_tv"/>
+
+    <ImageView
+        android:id="@+id/song_play_iv"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:src="@drawable/btn_miniplayer_play"
+        app:layout_constraintBottom_toBottomOf="@id/song_more_iv"
+        app:layout_constraintEnd_toStartOf="@id/song_more_iv"
+        app:layout_constraintTop_toTopOf="@id/song_more_iv"/>
+
+    <ImageView
+        android:id="@+id/song_more_iv"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:src="@drawable/btn_player_more"
+        app:layout_constraintTop_toTopOf="@id/song_list_title_tv"
+        app:layout_constraintBottom_toBottomOf="@id/song_list_singer_tv"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
