@@ -1,59 +1,103 @@
 package com.example.week2
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.week2.databinding.FragmentLockerSavedAlbumBinding
+import java.util.ArrayList
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [LockerSavedAlbumFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class LockerSavedAlbumFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private var _binding: FragmentLockerSavedAlbumBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_locker_saved_album, container, false)
+        _binding = FragmentLockerSavedAlbumBinding.inflate(inflater, container, false)
+
+        setupRecyclerView()
+
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment LockerSavedAlbumFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            LockerSavedAlbumFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+
+    private fun setupRecyclerView() {
+        val savedAlbums = createDummySavedAlbumList()
+
+        val savedAlbumRVAdapter = SavedAlbumRVAdapter(savedAlbums)
+
+
+        binding.lockSavedAlbumRv.adapter = savedAlbumRVAdapter
+
+        binding.lockSavedAlbumRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+
+        savedAlbumRVAdapter.setMyItemClickListener(object : SavedAlbumRVAdapter.MyItemClickListener {
+            override fun onPlayClick(album: Album) {
+                Log.d("LockerAlbumPlay", "Now playing: ${album.title}")
             }
+
+            override fun onMoreClick(position: Int) {
+                savedAlbumRVAdapter.removeItem(position)
+                Log.d("LockerAlbumDelete", "Album at position $position deleted.")
+            }
+        })
+    }
+
+
+    private fun createDummySavedAlbumList(): ArrayList<Album> {
+        return ArrayList<Album>().apply {
+
+            add(
+                Album(
+                    title = "Butter",
+                    singer = "방탄소년단 (BTS)",
+                    coverImg = R.drawable.img_album_exp,
+                    date = "2021.05.21",
+                    type = "싱글 | KPOP",
+                    Songs = ArrayList()
+                )
+            )
+            add(
+                Album(
+                    title = "Lilac",
+                    singer = "아이유 (IU)",
+                    coverImg = R.drawable.img_album_exp2,
+                    date = "2021.03.25",
+                    type = "정규 | KPOP",
+                    Songs = ArrayList()
+                )
+            )
+            add(
+                Album(
+                    title = "spring globe",
+                    singer = "요네즈 켄시",
+                    coverImg = R.drawable.img_album_globe,
+                    date = "2024.04.10",
+                    type = "싱글 | JPOP",
+                    Songs = ArrayList()
+                )
+            )
+            add(
+                Album(
+                    title = "dandelion",
+                    singer = "우효 (Oohyo)",
+                    coverImg = R.drawable.img_album_dendelion,
+                    date = "2015.05.07",
+                    type = "정규 | Indie",
+                    Songs = ArrayList()
+                )
+            )
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

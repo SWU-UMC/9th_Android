@@ -2,6 +2,7 @@ package com.example.week2
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +14,8 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityMainBinding
 
+
+    private var song:Song = Song()
     private val resultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -31,13 +34,26 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // MiniPlayer의 초기 곡 정보 설정 (MiniPlayer.mainPlayer 레이아웃을 ActivityMainBinding이 include한다고 가정)
-        val initialSong = Song("Butter", "방탄소년단 (BTS)") // 초기값 설정
+
+        inputDummySongs()
+
+
+        val initialSong = Song("Butter", "방탄소년단 (BTS)")
         binding.miniPlayer.tvTitle.text = initialSong.title
         binding.miniPlayer.tvArtist.text = initialSong.singer
 
         binding.miniPlayer.mainPlayer.setOnClickListener {
-            val currentSong = Song(binding.miniPlayer.tvTitle.text.toString(), binding.miniPlayer.tvArtist.text.toString())
+            val currentSong = Song(
+                binding.miniPlayer.tvTitle.text.toString(),
+                binding.miniPlayer.tvArtist.text.toString()
+            )
+
+
+            val songIdToSave: Int = 0
+
+            val editor = getSharedPreferences("song", MODE_PRIVATE).edit()
+            editor.putInt("songId", songIdToSave)
+            editor.apply()
 
             val intent = Intent(this, SongActivity::class.java).apply {
                 putExtra("title", currentSong.title)
@@ -77,11 +93,55 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun updateMiniPlayer(title: String, singer: String) {
+    override fun onStart() {
+        super.onStart()
 
-        binding.miniPlayer.tvTitle.text = title
-        binding.miniPlayer.tvArtist.text = singer
+        val spf = getSharedPreferences("song", MODE_PRIVATE)
+        val songId = spf.getInt("songId",0)
 
-        Toast.makeText(this, "MiniPlayer Updated: $title - $singer", Toast.LENGTH_SHORT).show()
+        val songDB = SongDatabase.getInstance(this)!!
+
+        song = if (songId == 0){
+            songDB.songDao().getSong(1)
+        } else{
+            songDB.songDao().getSong(songId)
+        }
+
+        Log.d("song ID", song.id.toString())
+        updateMiniPlayer(song)
     }
+
+    fun updateMiniPlayer(song: Song) {
+
+        binding.miniPlayer.tvTitle.text = song.title
+        binding.miniPlayer.tvArtist.text = song.singer
+
+        Toast.makeText(this, "MiniPlayer Updated: ${song.title} - ${song.singer}", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun inputDummySongs(){
+        val songDB = SongDatabase.getInstance(this)!!
+        val songs = songDB.songDao().getSongs()
+
+        if (songs.isNotEmpty()) return
+
+        songDB.songDao().insert(
+            Song(
+                "Lilac",
+                "아이유 (IU)",
+                0,
+                200,
+                false,
+                "music_lilac",
+                R.drawable.img_album_exp2,
+                false,
+            )
+        )
+
+
+
+        val _songs = songDB.songDao().getSongs()
+        Log.d("DB data", _songs.toString())
+    }
+
 }
