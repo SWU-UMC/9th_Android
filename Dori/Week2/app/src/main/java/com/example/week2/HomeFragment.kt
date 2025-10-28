@@ -32,12 +32,13 @@ class HomeFragment : Fragment() {
 
 
         albumDatas.apply {
-            add(Album("Butter", "방탄소년단 (BTS)", R.drawable.img_album_exp, ArrayList()))
-            add(Album("Lilac", "아이유 (IU)", R.drawable.img_album_exp2, ArrayList()))
-            add(Album("spring globe", "요네즈 켄시", R.drawable.img_album_globe, ArrayList()))
-            add(Album("dandelion", "우효 (Oohyo)", R.drawable.img_album_dendelion, ArrayList()))
-            add(Album("2am", "릴러말즈 (Leellamarz)", R.drawable.img_album_2am, ArrayList()))
-            add(Album("3am", "로제 (Rose)", R.drawable.img_album_3am, ArrayList()))
+
+            add(Album(title = "Butter", singer = "방탄소년단 (BTS)", coverImg = R.drawable.img_album_exp, Songs = ArrayList()))
+            add(Album(title = "Lilac", singer = "아이유 (IU)", coverImg = R.drawable.img_album_exp2, Songs = ArrayList()))
+            add(Album(title = "spring globe", singer = "요네즈 켄시", coverImg = R.drawable.img_album_globe, Songs = ArrayList()))
+            add(Album(title = "dandelion", singer = "우효 (Oohyo)", coverImg = R.drawable.img_album_dendelion, Songs = ArrayList()))
+            add(Album(title = "2am", singer = "릴러말즈 (Leellamarz)", coverImg = R.drawable.img_album_2am, Songs = ArrayList()))
+            add(Album(title = "3am", singer = "로제 (Rose)", coverImg = R.drawable.img_album_3am, Songs = ArrayList()))
         }
 
 
