@@ -32,12 +32,12 @@ class HomeFragment : Fragment() {
 
 
         albumDatas.apply {
-            add(Album("Butter", "방탄소년단 (BTS)", R.drawable.img_album_exp))
-            add(Album("Lilac", "아이유 (IU)", R.drawable.img_album_exp2))
-            add(Album("spring globe", "요네즈 켄시", R.drawable.img_album_globe))
-            add(Album("dandelion", "우효 (Oohyo)", R.drawable.img_album_dendelion))
-            add(Album("2am", "릴러말즈 (Leellamarz)", R.drawable.img_album_2am))
-            add(Album("3am", "로제 (Rose)", R.drawable.img_album_3am))
+            add(Album("Butter", "방탄소년단 (BTS)", R.drawable.img_album_exp, ArrayList()))
+            add(Album("Lilac", "아이유 (IU)", R.drawable.img_album_exp2, ArrayList()))
+            add(Album("spring globe", "요네즈 켄시", R.drawable.img_album_globe, ArrayList()))
+            add(Album("dandelion", "우효 (Oohyo)", R.drawable.img_album_dendelion, ArrayList()))
+            add(Album("2am", "릴러말즈 (Leellamarz)", R.drawable.img_album_2am, ArrayList()))
+            add(Album("3am", "로제 (Rose)", R.drawable.img_album_3am, ArrayList()))
         }
 
 
@@ -54,13 +54,16 @@ class HomeFragment : Fragment() {
             }
 
             override fun onPlayButtonClick(album: Album) {
-                val firstSong = album.Songs?.firstOrNull() ?: Song(album.title ?: "제목", album.singer ?: "가수")
 
+                val firstSong = album.Songs.firstOrNull() ?:
+                Song(
+                    title = album.title ?: "제목",
+                    singer = album.singer ?: "가수"
 
-                (activity as MainActivity).updateMiniPlayer(
-                    firstSong.title,
-                    firstSong.singer
                 )
+
+                (activity as MainActivity).updateMiniPlayer(firstSong)
+
             }
         })
 
