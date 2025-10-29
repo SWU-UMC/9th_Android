@@ -5,18 +5,20 @@ import android.view.MenuItem
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
-import com.example.a2week.databinding.ItemSavedsongBinding
+import com.example.a2week.databinding.ItemSavedalbumBinding
 
 class SavedAlbumAdapter(
-    private val songList: MutableList<AlbumData>,
-    private val onClick: (AlbumData) -> Unit
-) : RecyclerView.Adapter<SavedAlbumAdapter.SavedSongViewHolder>() {
-    inner class SavedSongViewHolder(val binding: ItemSavedsongBinding) :
+    private val savedAlbums: MutableList<SavedAlbumData>,
+    private val onClick: (SavedAlbumData) -> Unit
+) : RecyclerView.Adapter<SavedAlbumAdapter.SavedAlbumViewHolder>() {
+    inner class SavedAlbumViewHolder(val binding: ItemSavedalbumBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(song: AlbumData) {
-            binding.savedSongIv.setImageResource(song.img)
-            binding.savedSongTitleTv.text = song.title
-            binding.savedSongSingerTv.text = song.singer
+        fun bind(song: SavedAlbumData) {
+            binding.savedAlbumIv.setImageResource(song.img)
+            binding.savedAlbumTitleTv.text = song.title
+            binding.savedAlbumSingerTv.text = song.singer
+            binding.savedAlbumDetailTv.text = song.detail
+
 
             // 재생 버튼 상태 변경
             binding.songPlayIv.setImageResource(
@@ -41,7 +43,7 @@ class SavedAlbumAdapter(
                     if(menuItem.itemId == R.id.action_delete){
                         val position = bindingAdapterPosition
                         if(position != RecyclerView.NO_POSITION){
-                            songList.removeAt(position)
+                            savedAlbums.removeAt(position)
                             notifyItemRemoved(position)
                         }
                         true
@@ -52,15 +54,15 @@ class SavedAlbumAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SavedSongViewHolder {
-        val binding = ItemSavedsongBinding.inflate(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SavedAlbumViewHolder {
+        val binding = ItemSavedalbumBinding.inflate(
             LayoutInflater.from(parent.context),parent, false)
-        return SavedSongViewHolder(binding)
+        return SavedAlbumViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: SavedSongViewHolder, position: Int) {
-        holder.bind(songList[position])
+    override fun onBindViewHolder(holder: SavedAlbumViewHolder, position: Int) {
+        holder.bind(savedAlbums[position])
     }
 
-    override fun getItemCount(): Int = songList.size
+    override fun getItemCount(): Int = savedAlbums.size
 }

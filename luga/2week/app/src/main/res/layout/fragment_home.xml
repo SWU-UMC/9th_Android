@@ -1,25 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:andorid="http://schemas.android.com/tools">
+    android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
-
-        <!-- 배경 이미지 -->
-<!--        <ImageView-->
-<!--            android:id="@+id/home_panel_background_iv"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="430dp"-->
-<!--            android:scaleType="centerCrop"-->
-<!--            android:src="@drawable/img_first_album_default"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintHorizontal_bias="0.0"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent" />-->
 
         <!-- 배경 이미지를 ViewPager2로 수정 -->
         <androidx.viewpager2.widget.ViewPager2
@@ -209,9 +198,7 @@
             android:id="@+id/home_today_music_rv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
+            android:nestedScrollingEnabled="false"
             app:layout_constraintTop_toBottomOf="@id/home_today_music_title_tv"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -222,4 +209,4 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

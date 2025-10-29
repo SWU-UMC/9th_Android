@@ -23,6 +23,12 @@ class HomeFragment : Fragment() {
     ): View? {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         // 상단 앨범 클릭 이벤트
         val topAlbum = AlbumData(
             img = R.drawable.img_album_exp,
@@ -43,41 +49,45 @@ class HomeFragment : Fragment() {
         binding.homePanelBackgroundIv.orientation = ViewPager2.ORIENTATION_HORIZONTAL
 
         // 인디케이터 연결
-        TabLayoutMediator(binding.homePanelIndicator, binding.homePanelBackgroundIv) { _, _ -> }.attach()
+        binding.homePanelIndicator.post {
+            TabLayoutMediator(
+                binding.homePanelIndicator,
+                binding.homePanelBackgroundIv
+            ) { _, _ -> }.attach()
+        }
 
         // RecycleView 구현 및 아이템 클릭 이벤트
         val todayAlbumList = listOf(
             AlbumData(R.drawable.img_album_exp2, "LILAC", "아이유(IU)"),
             AlbumData(R.drawable.img_album_exp2, "Love Wins All", "아이유(IU)"),
             AlbumData(R.drawable.img_album_exp, "Butter", "BTS"),
-            AlbumData(R.drawable.img_album_exp, "Dynamite", "BTS"))
+            AlbumData(R.drawable.img_album_exp, "Dynamite", "BTS")
+        )
 
         val todayMusicAdapter = TodayMusicAdapter(
             todayAlbumList,
-            onClick = { clickedAlbum -> openAlbumFragment(clickedAlbum)},
+            onClick = { clickedAlbum -> openAlbumFragment(clickedAlbum) },
             onPlayClick = { clickedAlbum ->
                 (activity as? MainActivity)?.updateMiniPlayer(clickedAlbum)
-        })
+            })
 
         binding.homeTodayMusicRv.apply {
             adapter = todayMusicAdapter
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        }
-
-        val itemSpacing = 24
-        binding.homeTodayMusicRv.addItemDecoration(object : RecyclerView.ItemDecoration() {
-            override fun getItemOffsets(
-                outRect: Rect,
-                view: View,
-                parent: RecyclerView,
-                state: RecyclerView.State
-            ) {
-                outRect.right = itemSpacing
+            if (itemDecorationCount == 0) {
+                addItemDecoration(object : RecyclerView.ItemDecoration() {
+                    override fun getItemOffsets(
+                        outRect: Rect,
+                        view: View,
+                        parent: RecyclerView,
+                        state: RecyclerView.State
+                    ) {
+                        outRect.right = 24
+                    }
+                })
             }
-        })
-
-        return binding.root
+        }
     }
 
     // 앨범 클릭 시 AlbumFragment 연결 메서드

@@ -21,21 +21,15 @@ class SavedAlbumFragment: Fragment() {
         _binding = FragmentLockerSavedalbumBinding.inflate(inflater, container, false)
 
         // 샘플 data
-        val savedSongs = mutableListOf(
-            AlbumData(R.drawable.img_album_exp, "앨범 이름", "가수 이름"),
-            AlbumData(R.drawable.img_album_exp, "앨범 이름", "가수 이름"),
-            AlbumData(R.drawable.img_album_exp2, "앨범 이름", "가수 이름"),
-            AlbumData(R.drawable.img_album_exp2, "앨범 이름", "가수 이름"),
-            AlbumData(R.drawable.img_album_exp, "앨범 이름", "가수 이름"),
-            AlbumData(R.drawable.img_album_exp, "앨범 이름", "가수 이름"),
-            AlbumData(R.drawable.img_album_exp2, "앨범 이름", "가수 이름"),
-            AlbumData(R.drawable.img_album_exp2, "앨범 이름", "가수 이름"),
-            AlbumData(R.drawable.img_album_exp, "앨범 이름", "가수 이름"),
-            AlbumData(R.drawable.img_album_exp, "앨범 이름", "가수 이름"),
-            AlbumData(R.drawable.img_album_exp2, "앨범 이름", "가수 이름"),
-            AlbumData(R.drawable.img_album_exp2, "앨범 이름", "가수 이름"))
+        val savedAlbums = mutableListOf(
+            SavedAlbumData(R.drawable.img_album_exp, "앨범 이름", "가수 이름", "2025.10.30 | 정규 | KPOP"),
+            SavedAlbumData(R.drawable.img_album_exp, "앨범 이름", "가수 이름", "2025.10.30 | 정규 | KPOP"),
+            SavedAlbumData(R.drawable.img_album_exp2, "앨범 이름", "가수 이름", "2025.10.30 | 정규 | KPOP"),
+            SavedAlbumData(R.drawable.img_album_exp2, "앨범 이름", "가수 이름", "2025.10.30 | 정규 | KPOP"),
+            SavedAlbumData(R.drawable.img_album_exp, "앨범 이름", "가수 이름", "2025.10.30 | 정규 | KPOP"),
+            SavedAlbumData(R.drawable.img_album_exp, "앨범 이름", "가수 이름", "2025.10.30 | 정규 | KPOP"))
 
-        val adapter = SavedSongAdapter(savedSongs) { clickedSong ->
+        val adapter = SavedAlbumAdapter(savedAlbums) { clickedSong ->
             val bundle = Bundle().apply {
                 putInt("albumImg", clickedSong.img)
                 putString("albumTitle", clickedSong.title)
