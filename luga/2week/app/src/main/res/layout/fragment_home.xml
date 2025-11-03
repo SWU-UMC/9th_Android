@@ -198,6 +198,7 @@
             android:id="@+id/home_today_music_rv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
             android:nestedScrollingEnabled="false"
             app:layout_constraintTop_toBottomOf="@id/home_today_music_title_tv"
             app:layout_constraintStart_toStartOf="parent"
