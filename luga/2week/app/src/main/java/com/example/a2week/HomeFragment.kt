@@ -2,6 +2,8 @@ package com.example.a2week
 
 import android.graphics.Rect
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +17,8 @@ import com.google.android.material.tabs.TabLayoutMediator
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+
+    private var bannerPosition = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,12 +74,25 @@ class HomeFragment : Fragment() {
         binding.homeTopBannerVp.orientation = ViewPager2.ORIENTATION_HORIZONTAL
 
         // 인디케이터 연결
-        binding.homePanelIndicator.post {
-            TabLayoutMediator(
-                binding.homePanelIndicator,
-                binding.homeTopBannerVp
-            ) { _, _ -> }.attach()
+        binding.homePanelIndicator.setViewPager(binding.homeTopBannerVp)
+
+        // 자동 슬라이드
+        val handler = Handler(Looper.getMainLooper())
+        val runnable = object: Runnable{
+            override fun run(){
+                bannerPosition = (bannerPosition + 1) % bannerAdapter.itemCount
+                binding.homeTopBannerVp.setCurrentItem(bannerPosition, true)
+                handler.postDelayed(this, 3000)
+            }
         }
+        handler.postDelayed(runnable, 3000)
+
+        // 수동 스크롤 시 인디케이터 동기화
+        binding.homeTopBannerVp.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+            }
+        })
 
         // RecycleView 구현 및 아이템 클릭 이벤트
         val todayAlbumList = listOf(

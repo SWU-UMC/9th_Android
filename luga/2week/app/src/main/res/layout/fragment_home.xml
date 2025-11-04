@@ -21,15 +21,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Indicator 추가 -->
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/home_panel_indicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/home_panel_background_iv"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
         <!-- 우상단 아이콘 3개 -->
         <ImageView
             android:id="@+id/home_panel_btn_nugu_iv"
@@ -70,6 +61,15 @@
             android:layout_marginBottom="30dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/home_panel_background_iv"/>
+
+        <!-- Indicator 추가 -->
+        <me.relex.circleindicator.CircleIndicator3
+            android:id="@+id/home_panel_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/home_panel_background_iv"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- 배경 이미지 하단 부분 -->
         <TextView
