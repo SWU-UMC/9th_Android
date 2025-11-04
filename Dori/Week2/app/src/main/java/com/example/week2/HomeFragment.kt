@@ -1,6 +1,9 @@
 package com.example.week2
 
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +21,25 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private var albumDatas = ArrayList<Album>()
+    private val handler = Handler(Looper.getMainLooper())
+    private val SLIDE_DELAY: Long = 3000
+    private val indicatorViews by lazy {
+        listOf(binding.indicator0IvHome, binding.indicator1IvHome, binding.indicator2IvHome)
+    }
+
+
+    private val slideRunnable = object : Runnable {
+        override fun run() {
+            val adapter = binding.homePannelBackgroundIv.adapter
+            if (adapter != null && adapter.itemCount > 0) {
+                val current = binding.homePannelBackgroundIv.currentItem
+                val next = (current + 1) % adapter.itemCount
+                binding.homePannelBackgroundIv.setCurrentItem(next, true)
+            }
+            handler.postDelayed(this, SLIDE_DELAY)
+        }
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,12 +54,12 @@ class HomeFragment : Fragment() {
 
 
         albumDatas.apply {
-            add(Album("Butter", "방탄소년단 (BTS)", R.drawable.img_album_exp))
-            add(Album("Lilac", "아이유 (IU)", R.drawable.img_album_exp2))
-            add(Album("spring globe", "요네즈 켄시", R.drawable.img_album_globe))
-            add(Album("dandelion", "우효 (Oohyo)", R.drawable.img_album_dendelion))
-            add(Album("2am", "릴러말즈 (Leellamarz)", R.drawable.img_album_2am))
-            add(Album("3am", "로제 (Rose)", R.drawable.img_album_3am))
+            add(Album(title = "Butter", singer = "방탄소년단 (BTS)", coverImg = R.drawable.img_album_exp, Songs = ArrayList()))
+            add(Album(title = "Lilac", singer = "아이유 (IU)", coverImg = R.drawable.img_album_exp2, Songs = ArrayList()))
+            add(Album(title = "spring globe", singer = "요네즈 켄시", coverImg = R.drawable.img_album_globe, Songs = ArrayList()))
+            add(Album(title = "dandelion", singer = "우효 (Oohyo)", coverImg = R.drawable.img_album_dendelion, Songs = ArrayList()))
+            add(Album(title = "2am", singer = "릴러말즈 (Leellamarz)", coverImg = R.drawable.img_album_2am, Songs = ArrayList()))
+            add(Album(title = "3am", singer = "로제 (Rose)", coverImg = R.drawable.img_album_3am, Songs = ArrayList()))
         }
 
 
@@ -54,13 +76,16 @@ class HomeFragment : Fragment() {
             }
 
             override fun onPlayButtonClick(album: Album) {
-                val firstSong = album.Songs?.firstOrNull() ?: Song(album.title ?: "제목", album.singer ?: "가수")
 
+                val firstSong = album.Songs.firstOrNull() ?:
+                Song(
+                    title = album.title ?: "제목",
+                    singer = album.singer ?: "가수"
 
-                (activity as MainActivity).updateMiniPlayer(
-                    firstSong.title,
-                    firstSong.singer
                 )
+
+                (activity as MainActivity).updateMiniPlayer(firstSong)
+
             }
         })
 
@@ -69,14 +94,25 @@ class HomeFragment : Fragment() {
 
 
 
-
-
-
         val topBannerAdapter = BannerVPAdapter(this@HomeFragment)
         topBannerAdapter.addFragment(MainBannerFragment(R.drawable.img_first_album_default))
+        topBannerAdapter.addFragment(MainBannerFragment(R.drawable.img_album_dendelion)) // 더미 데이터 2
+        topBannerAdapter.addFragment(MainBannerFragment(R.drawable.img_album_2am)) // 더미 데이터 3
 
         binding.homePannelBackgroundIv.adapter = topBannerAdapter
         binding.homePannelBackgroundIv.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+
+
+        updateIndicator(0)
+
+
+        binding.homePannelBackgroundIv.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                updateIndicator(position)
+            }
+        })
+
 
 
         val bottomBannerAdapter = BannerVPAdapter(this@HomeFragment)
@@ -88,10 +124,37 @@ class HomeFragment : Fragment() {
     }
 
 
+    override fun onResume() {
+        super.onResume()
+
+        handler.postDelayed(slideRunnable, SLIDE_DELAY)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        handler.removeCallbacks(slideRunnable)
+    }
+
+
     override fun onDestroyView() {
         super.onDestroyView()
+
+        handler.removeCallbacks(slideRunnable)
         _binding = null
     }
+
+
+
+    private fun updateIndicator(position: Int) {
+
+        indicatorViews.forEach { it.setImageResource(R.drawable.shape_circle_gray) }
+
+
+        if (position >= 0 && position < indicatorViews.size) {
+            indicatorViews[position].setImageResource(R.drawable.shape_circle_blue)
+        }
+    }
+
 
 
     private fun changeAlbumFragment(album: Album) {
@@ -107,5 +170,4 @@ class HomeFragment : Fragment() {
             .addToBackStack(null)
             .commitAllowingStateLoss()
     }
-
 }

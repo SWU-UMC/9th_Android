@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="70dp"
-
-
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
     android:background="?attr/selectableItemBackground">
 
     <ImageView
@@ -21,7 +21,7 @@
         android:contentDescription="앨범 커버"/>
 
     <TextView
-        android:id="@+id/item_saved_song_title_tv"
+        android:id="@+id/item_saved_album_title_tv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -35,7 +35,7 @@
         app:layout_constraintTop_toTopOf="@+id/item_saved_album_cover_iv"
         app:layout_constraintBottom_toTopOf="@+id/item_saved_singer_tv"
         app:layout_constraintVertical_chainStyle="packed"
-        tools:text="노래 이름" />
+        tools:text="앨범 이름" />
 
     <TextView
         android:id="@+id/item_saved_singer_tv"
@@ -46,22 +46,40 @@
         android:textSize="14sp"
         android:maxLines="1"
         android:ellipsize="end"
-        app:layout_constraintStart_toStartOf="@+id/item_saved_song_title_tv"
-        app:layout_constraintTop_toBottomOf="@+id/item_saved_song_title_tv"
+        app:layout_constraintStart_toStartOf="@+id/item_saved_album_title_tv"
+        app:layout_constraintTop_toBottomOf="@+id/item_saved_album_title_tv"
         app:layout_constraintEnd_toStartOf="@id/item_saved_play_iv"
-        app:layout_constraintBottom_toBottomOf="@+id/item_saved_album_cover_iv"
+        app:layout_constraintBottom_toTopOf="@+id/item_saved_date_tv"
         tools:text="가수 이름" />
 
-    <ImageView
-        android:id="@+id/item_saved_more_iv"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:src="@drawable/btn_player_more"
-        app:tint="@color/gray"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:contentDescription="더보기" />
+    <TextView
+        android:id="@+id/item_saved_date_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textColor="@color/gray"
+        android:textSize="12sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        app:layout_constraintStart_toStartOf="@+id/item_saved_album_title_tv"
+        app:layout_constraintTop_toBottomOf="@+id/item_saved_singer_tv"
+        app:layout_constraintBottom_toBottomOf="@+id/item_saved_album_cover_iv"
+        tools:text="2025.05.15" />
+
+    <TextView
+        android:id="@+id/item_saved_type_tv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:textColor="@color/gray"
+        android:textSize="12sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        app:layout_constraintStart_toEndOf="@id/item_saved_date_tv"
+        app:layout_constraintEnd_toStartOf="@id/item_saved_play_iv"
+        app:layout_constraintTop_toTopOf="@id/item_saved_date_tv"
+        app:layout_constraintBottom_toBottomOf="@id/item_saved_date_tv"
+        tools:text="| 정규 | JPOP" />
 
     <ImageView
         android:id="@+id/item_saved_play_iv"
@@ -74,6 +92,17 @@
         app:layout_constraintEnd_toStartOf="@id/item_saved_more_iv"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:contentDescription="재생" />
+        android:contentDescription="재생 버튼" />
+
+    <ImageView
+        android:id="@+id/item_saved_more_iv"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/btn_player_more"
+        app:tint="@color/gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:contentDescription="더보기 버튼" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
