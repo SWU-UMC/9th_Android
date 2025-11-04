@@ -33,7 +33,7 @@ class SongActivity : AppCompatActivity() {
                 binding.seekBar.progress = progress
             }
 
-
+            //타이머
             val currentSecond = currentMills / 1000
             val totalSecond = totalMills / 1000
             binding.tvCurrentTime.text = String.format("%02d:%02d", currentSecond / 60, currentSecond % 60)
