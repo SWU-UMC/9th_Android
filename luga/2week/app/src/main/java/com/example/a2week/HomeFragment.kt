@@ -30,29 +30,50 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // 상단 앨범 클릭 이벤트
-        val topAlbum = AlbumData(
-            img = R.drawable.img_album_exp,
-            title = binding.homePanelAlbumTitleTv.text.toString(),
-            singer = binding.homePanelAlbumSingerTv.text.toString()
-        )
-
-        binding.homePanelAlbumImgIv.setOnClickListener {
-            openAlbumFragment(topAlbum)
-        }
+//        val topAlbum = AlbumData(
+//            img = R.drawable.img_album_exp,
+//            title = binding.homePanelAlbumTitleTv.text.toString(),
+//            singer = binding.homePanelAlbumSingerTv.text.toString()
+//        )
+//
+//        binding.homePanelAlbumImgIv.setOnClickListener {
+//            openAlbumFragment(topAlbum)
+//        }
 
         // ViewPager2 구현
         val bannerAdapter = BannerVPAdapter(this)
-        bannerAdapter.addFragment(BannerFragment(R.drawable.img_first_album_default))
-        bannerAdapter.addFragment(BannerFragment(R.drawable.img_first_album_default))
 
-        binding.homePanelBackgroundIv.adapter = bannerAdapter
-        binding.homePanelBackgroundIv.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+        val bannerList = listOf(
+            HomePannelData(
+                title = "오늘의 추천 노래",
+                songs = listOf(
+                    AlbumData(R.drawable.img_album_exp, "Dynamite", "BTS"),
+                    AlbumData(R.drawable.img_album_exp, "Butter", "BTS")
+                )
+            ),
+            HomePannelData(
+                title = "달밤의 감성 산책",
+                songs = listOf(
+                    AlbumData(R.drawable.img_album_exp2, "Lailac", "IU"),
+                    AlbumData(R.drawable.img_album_exp2, "Love Wins All", "IU")
+                )
+            )
+        )
+
+        bannerList.forEach { data ->
+            bannerAdapter.addFragment(
+                BannerFragment.newInstance(data)
+            )
+        }
+
+        binding.homeTopBannerVp.adapter = bannerAdapter
+        binding.homeTopBannerVp.orientation = ViewPager2.ORIENTATION_HORIZONTAL
 
         // 인디케이터 연결
         binding.homePanelIndicator.post {
             TabLayoutMediator(
                 binding.homePanelIndicator,
-                binding.homePanelBackgroundIv
+                binding.homeTopBannerVp
             ) { _, _ -> }.attach()
         }
 
