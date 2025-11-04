@@ -1,15 +1,13 @@
 package com.example.week2
 
 import android.content.Intent
-
-import android.media.MediaPlayer
 import android.os.Bundle
-import android.util.Log
+import android.os.Handler
+import android.os.Looper
+import android.widget.SeekBar
 import android.widget.Toast
-
 import androidx.appcompat.app.AppCompatActivity
 import com.example.week2.databinding.ActivitySongBinding
-
 
 class SongActivity : AppCompatActivity() {
 
@@ -19,33 +17,121 @@ class SongActivity : AppCompatActivity() {
     lateinit var songDB: SongDatabase
     var nowPos = 0
 
-    private var isPlaying: Boolean = false
 
-    lateinit var timer: Timer
-    var mediaPlayer: MediaPlayer? = null
+    private val handler = Handler(Looper.getMainLooper())
+    private val updateSeekBar = object : Runnable {
+        override fun run() {
+            if (MusicService.currentSong == null) return
+
+            val currentSong = MusicService.currentSong!!
+            val currentMills = MusicService.getCurrentPosition()
+            val totalMills = MusicService.getDuration()
+
+
+            if (totalMills > 0) {
+                val progress = ((currentMills.toFloat() / totalMills.toFloat()) * 1000).toInt()
+                binding.seekBar.progress = progress
+            }
+
+
+            val currentSecond = currentMills / 1000
+            val totalSecond = totalMills / 1000
+            binding.tvCurrentTime.text = String.format("%02d:%02d", currentSecond / 60, currentSecond % 60)
+            binding.tvTotalTime.text = String.format("%02d:%02d", totalSecond / 60, totalSecond % 60)
+
+
+            if (MusicService.isPlaying) {
+                binding.btnPlay.setImageResource(R.drawable.nugu_btn_pause_32)
+                handler.postDelayed(this, 50)
+            } else {
+                binding.btnPlay.setImageResource(R.drawable.btn_miniplayer_play)
+            }
+
+
+            if (currentMills >= totalMills && totalMills > 0) {
+
+                handler.removeCallbacks(this)
+
+            }
+        }
+    }
+
+    private fun startTimer() {
+        handler.removeCallbacks(updateSeekBar)
+        handler.post(updateSeekBar)
+    }
+
+
+    private val SONG_PREFERENCE = "song"
+    private val CURRENT_SECOND_KEY = "currentSecond"
+    private val IS_PLAYING_KEY = "isPlaying"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySongBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
         initPlayList()
         initClickListener()
-        initSong()
+        initSeekBarListener()
 
-        val title = intent.getStringExtra("title")
-        val singer = intent.getStringExtra("singer")
+        albumTitle = intent.getStringExtra("title")
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        val spf = getSharedPreferences(SONG_PREFERENCE, MODE_PRIVATE)
+        val songId = spf.getInt("songId", 1)
+
+        val songDB = SongDatabase.getInstance(this)!!
+        val currentSongFromDB = songDB.songDao().getSong(songId)
 
 
-        binding.tvSongTitle.text = title
-        binding.tvArtistName.text = singer
-
-        albumTitle = title
-
-
+        if (MusicService.currentSong?.id != currentSongFromDB.id) {
+            MusicService.setAndPlay(this, currentSongFromDB)
+        } else {
+        }
 
 
+        setPlayer(currentSongFromDB)
+        startTimer()
+    }
+
+
+    private fun initSeekBarListener() {
+        binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser && MusicService.currentSong != null) {
+                    val totalSecond = MusicService.getDuration() / 1000
+                    val newProgressRatio = progress.toFloat() / 1000f
+                    val newSecond = (totalSecond * newProgressRatio).toInt()
+                    binding.tvCurrentTime.text = String.format("%02d:%02d", newSecond / 60, newSecond % 60)
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+
+                handler.removeCallbacks(updateSeekBar)
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                seekBar?.let {
+                    if (MusicService.currentSong == null) return
+
+                    val currentSong = MusicService.currentSong!!
+                    val totalSecond = MusicService.getDuration() / 1000
+                    val newProgressRatio = it.progress.toFloat() / 1000f
+                    val newSecond = (totalSecond * newProgressRatio).toInt()
+
+
+                    MusicService.setAndPlay(this@SongActivity, currentSong, newSecond)
+
+
+                    startTimer()
+                }
+            }
+        })
     }
 
     private fun initClickListener(){
@@ -53,16 +139,8 @@ class SongActivity : AppCompatActivity() {
             togglePlayPause()
         }
 
-
-
         binding.songDownIb.setOnClickListener {
-
-            mediaPlayer?.stop()
-            mediaPlayer?.release()
-            mediaPlayer = null
-
-            // 타이머 중지
-            timer.interrupt()
+            handler.removeCallbacks(updateSeekBar)
 
             returnResultToMainActivity()
             finish()
@@ -77,18 +155,11 @@ class SongActivity : AppCompatActivity() {
         }
     }
 
+
     private fun togglePlayPause() {
-        isPlaying = !isPlaying
 
-        if (isPlaying) {
-
-            binding.btnPlay.setImageResource(R.drawable.nugu_btn_pause_32)
-            setPlayerStatus(true)
-        } else {
-
-            binding.btnPlay.setImageResource(R.drawable.btn_miniplayer_play)
-            setPlayerStatus(false)
-        }
+        MusicService.togglePlayPause(this)
+        startTimer()
     }
 
 
@@ -97,138 +168,58 @@ class SongActivity : AppCompatActivity() {
         songs.addAll(songDB.songDao().getSongs())
     }
 
-
-    private fun initSong(){
-        val spf = getSharedPreferences("song", MODE_PRIVATE)
-        val songId = spf.getInt("songId",0)
-
-        nowPos = getPlayingSongPosition(songId)
-
-        Log.d("now Song ID",songs[nowPos].id.toString())
-
-        startTimer()
-        setPlayer(songs[nowPos])
-    }
-
-
     private fun setPlayer(song: Song){
 
         binding.tvSongTitle.text = song.title
         binding.tvArtistName.text = song.singer
-        binding.tvCurrentTime.text = String.format("%02d:%02d",song.second / 60, song.second % 60)
-        binding.tvTotalTime.text = String.format("%02d:%02d",song.playTime / 60, song.playTime % 60)
-
-
         binding.ivAlbumCover.setImageResource(song.coverImg!!)
 
 
-        binding.seekBar.progress = (song.second * 100 / song.playTime)
+        val totalSecond = MusicService.getDuration() / 1000
+        val currentSecond = MusicService.getCurrentPosition() / 1000
 
-        val music = resources.getIdentifier(song.music, "raw", this.packageName)
-        mediaPlayer = MediaPlayer.create(this, music)
-
-
-        if (song.isLike){
-
-        } else{
-
-        }
-
-        setPlayerStatus(song.isPlaying)
-
-    }
+        binding.tvTotalTime.text = String.format("%02d:%02d", totalSecond / 60, totalSecond % 60)
 
 
-    private fun startTimer(){
-
-        timer = Timer(songs[nowPos].playTime,songs[nowPos].isPlaying)
-        timer.start()
-    }
-
-    inner class Timer(private val playTime: Int,var isPlaying: Boolean = true):Thread(){
-
-        private var second : Int = 0
-        private var mills: Float = 0f
-
-        override fun run() {
-            super.run()
-            try {
-                while (true){
-
-                    if (second >= playTime){
-                        break
-                    }
-
-                    if (isPlaying){
-                        sleep(50)
-                        mills += 50
-
-                        runOnUiThread {
-
-                            binding.seekBar.progress = ((mills / playTime)*100).toInt()
-                        }
-
-                        if (mills % 1000 == 0f){
-                            runOnUiThread {
-
-                                binding.tvCurrentTime.text = String.format("%02d:%02d",second / 60, second % 60)
-                            }
-                            second++
-                        }
-
-                    }
-
-                }
-
-            }catch (e: InterruptedException){
-                Log.d("Song","쓰레드가 죽었습니다. ${e.message}")
-            }
-
-        }
-    }
-
-    private fun setPlayerStatus (isPlaying : Boolean){
-        songs[nowPos].isPlaying = isPlaying
-        timer.isPlaying = isPlaying
+        binding.seekBar.max = 1000
 
 
-        if(isPlaying){
 
-            mediaPlayer?.start()
+
+        if (MusicService.isPlaying) {
+            binding.btnPlay.setImageResource(R.drawable.nugu_btn_pause_32)
         } else {
-
-            if(mediaPlayer?.isPlaying == true){
-                mediaPlayer?.pause()
-            }
+            binding.btnPlay.setImageResource(R.drawable.btn_miniplayer_play)
         }
-
     }
+
+
+
 
 
 
     private fun moveSong(direct: Int){
+        // nowPos를 업데이트
+        nowPos = getPlayingSongPosition(MusicService.currentSong?.id ?: 1)
+
         if (nowPos + direct < 0){
-            Toast.makeText(this,"first song", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this,"첫 곡입니다.", Toast.LENGTH_SHORT).show()
             return
         }
 
         if (nowPos + direct >= songs.size){
-            Toast.makeText(this,"last song",Toast.LENGTH_SHORT).show()
+            Toast.makeText(this,"마지막 곡입니다.",Toast.LENGTH_SHORT).show()
             return
         }
 
         nowPos += direct
+        val nextSong = songs[nowPos]
 
-        timer.interrupt()
+        MusicService.setAndPlay(this, nextSong, 0)
+
+        setPlayer(nextSong)
         startTimer()
-
-        mediaPlayer?.release()
-        mediaPlayer = null
-
-        setPlayer(songs[nowPos])
     }
-
-
 
     private fun getPlayingSongPosition(songId: Int): Int{
         for (i in 0 until songs.size){
@@ -249,23 +240,26 @@ class SongActivity : AppCompatActivity() {
         if (albumTitle == null) {
             setResult(RESULT_CANCELED)
         }
-    }
 
+
+        val editor = getSharedPreferences(SONG_PREFERENCE, MODE_PRIVATE).edit()
+        editor.putInt("songId", MusicService.currentSong?.id ?: 1)
+        editor.putInt(CURRENT_SECOND_KEY, MusicService.getCurrentPosition() / 1000)
+        editor.putBoolean(IS_PLAYING_KEY, MusicService.isPlaying)
+        editor.apply()
+    }
 
     override fun onPause() {
         super.onPause()
+        handler.removeCallbacks(updateSeekBar)
 
-        if (mediaPlayer?.isPlaying == true) {
-            mediaPlayer?.pause()
-        }
 
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        handler.removeCallbacks(updateSeekBar)
 
-        timer.interrupt()
-        mediaPlayer?.release()
-        mediaPlayer = null
+
     }
 }
