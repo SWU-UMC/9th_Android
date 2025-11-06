@@ -98,12 +98,18 @@ class SongActivity : AppCompatActivity() {
     }
 
     private fun resetPlayerProgress() {
-        mediaPlayer?.seekTo(0)
-        binding.songStartTimeTv.text = "00:00"
-        binding.songProgressbarSb.progress = 0
+        mediaPlayer?.let { mp ->
+            mp.seekTo(0)
 
-        if(song.isPlaying){
-            mediaPlayer?.start()
+            binding.songStartTimeTv.text = "00:00"
+            binding.songProgressbarSb.progress = 0
+
+            if(song.isPlaying){
+                mp.start()
+                startUpdatingSeekBar()
+            }else{
+                mp.pause()
+            }
         }
     }
 
