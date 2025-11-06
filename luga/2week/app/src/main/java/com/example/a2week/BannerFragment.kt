@@ -11,10 +11,16 @@ class BannerFragment: Fragment() {
     lateinit var binding: FragmentBannerBinding
     lateinit var bannerData: HomePannelData
 
+    interface OnAlbumClickListener{
+        fun onAlbumClicked(album: AlbumData)
+    }
+
+    var albumClickListener: OnAlbumClickListener? = null
+
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         arguments?.let {
-            bannerData = it.getSerializable("bannerData") as HomePannelData
+            bannerData = it.getParcelable("bannerData")!!
         }
     }
 
@@ -35,6 +41,14 @@ class BannerFragment: Fragment() {
         binding.homePanelAlbumTitle2Tv.text = bannerData.songs[1].title
         binding.homePanelAlbumSinger2Tv.text = bannerData.songs[1].singer
 
+        // 클릭 리스너
+        binding.homePanelAlbumImgIv.setOnClickListener {
+            albumClickListener?.onAlbumClicked(bannerData.songs[0])
+        }
+        binding.homePanelAlbumImg2Iv.setOnClickListener {
+            albumClickListener?.onAlbumClicked(bannerData.songs[1])
+        }
+
         return binding.root
     }
 
@@ -42,7 +56,7 @@ class BannerFragment: Fragment() {
         fun newInstance(bannerData: HomePannelData) =
             BannerFragment().apply {
                 arguments = Bundle().apply {
-                    putSerializable("bannerData", bannerData)
+                    putParcelable("bannerData", bannerData)
                 }
             }
     }

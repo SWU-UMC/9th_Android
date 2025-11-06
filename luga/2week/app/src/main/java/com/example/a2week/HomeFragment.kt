@@ -33,19 +33,11 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 상단 앨범 클릭 이벤트
-//        val topAlbum = AlbumData(
-//            img = R.drawable.img_album_exp,
-//            title = binding.homePanelAlbumTitleTv.text.toString(),
-//            singer = binding.homePanelAlbumSingerTv.text.toString()
-//        )
-//
-//        binding.homePanelAlbumImgIv.setOnClickListener {
-//            openAlbumFragment(topAlbum)
-//        }
 
         // ViewPager2 구현
-        val bannerAdapter = BannerVPAdapter(this)
+        val bannerAdapter = BannerVPAdapter(this){ clickedAlbum ->
+            openAlbumFragment(clickedAlbum)
+        }
 
         val bannerList = listOf(
             HomePannelData(
@@ -58,7 +50,7 @@ class HomeFragment : Fragment() {
             HomePannelData(
                 title = "달밤의 감성 산책",
                 songs = listOf(
-                    AlbumData(R.drawable.img_album_exp2, "Lailac", "IU"),
+                    AlbumData(R.drawable.img_album_exp2, "Lilac", "IU"),
                     AlbumData(R.drawable.img_album_exp2, "Love Wins All", "IU")
                 )
             )
@@ -80,9 +72,12 @@ class HomeFragment : Fragment() {
         val handler = Handler(Looper.getMainLooper())
         val runnable = object: Runnable{
             override fun run(){
-                bannerPosition = (bannerPosition + 1) % bannerAdapter.itemCount
-                binding.homeTopBannerVp.setCurrentItem(bannerPosition, true)
-                handler.postDelayed(this, 3000)
+                _binding?.let{
+                    bannerPosition = (bannerPosition + 1) % bannerAdapter.itemCount
+                    it.homeTopBannerVp.setCurrentItem(bannerPosition, true)
+                    handler.postDelayed(this, 3000)
+
+                }
             }
         }
         handler.postDelayed(runnable, 3000)
