@@ -24,7 +24,8 @@ class SongActivity : AppCompatActivity(), SongManager.OnPlaybackStateChangeListe
         // 현재 재생 중인 곡 정보
         val song = SongManager.currentSong?: Song("Lilac", "IU")
         val resId = R.raw.music_lilac
-        SongManager.init(this, resId, song)
+
+        if(SongManager.currentSong == null) { SongManager.init(this, resId, song) }
 
         binding.songMusicTitleTv.text = song.title
         binding.songSingerNameTv.text = song.singer
