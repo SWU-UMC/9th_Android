@@ -2,53 +2,99 @@ package com.example.a2week
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
+import android.os.Handler
+import android.os.Looper
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.example.a2week.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),SongManager.OnPlaybackStateChangeListener {
 
     lateinit var binding : ActivityMainBinding
-
-    // SongActivity에서 결과값 받기
-    private val songActivityLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                val albumTitle = result.data?.getStringExtra("albumTitle")
-                if (!albumTitle.isNullOrEmpty()) {
-                    Toast.makeText(this, "앨범명 : $albumTitle", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
+    private val handler = Handler(Looper.getMainLooper())
+    private var progressTask : Runnable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val song = Song(
-            binding.mainMiniplayerTitleTv.text.toString(),
-            binding.mainMiniplayerSingerTv.text.toString())
+        // SongManager 초기화
+        SongManager.addListener(this)
 
         // SongActivity 실행
         binding.mainPlayerCl.setOnClickListener {
             val intent = Intent(this, SongActivity::class.java)
-            intent.putExtra("title", song.title)
-            intent.putExtra("singer", song.singer)
-            songActivityLauncher.launch(intent)
+            startActivity(intent)
         }
 
+        binding.mainMiniplayerBtnPlayIv.setOnClickListener { SongManager.play() }
+        binding.mainMiniplayerBtnPauseIv.setOnClickListener { SongManager.pause() }
+
         initBottomNavigation()
+        startProgressUpdate()
+        updateMiniPlayerUI()
+    }
+
+    private fun startProgressUpdate(){
+        if(progressTask != null) return
+
+        progressTask = object: Runnable{
+            override fun run(){
+                if(SongManager.isPlaying){
+                    SongManager.updateProgress()
+                }
+                handler.postDelayed(this, 1000)
+            }
+        }
+        handler.post(progressTask!!)
+    }
+
+    override fun onResume(){
+        super.onResume()
+        updateMiniPlayerUI()
+    }
+
+    override fun onPlay(){
+        runOnUiThread {
+            binding.mainMiniplayerBtnPlayIv.visibility = View.GONE
+            binding.mainMiniplayerBtnPauseIv.visibility = View.VISIBLE
+            updateMiniPlayerUI()
+        }
+    }
+
+    override fun onPausePlayback(){
+        runOnUiThread {
+            binding.mainMiniplayerBtnPlayIv.visibility = View.VISIBLE
+            binding.mainMiniplayerBtnPauseIv.visibility = View.GONE
+        }
+    }
+
+    override fun onPlaybackStateChanged(position: Int, duration: Int){
+        runOnUiThread {
+            binding.mainMiniplayerSeekbarSb.max = duration
+            binding.mainMiniplayerSeekbarSb.progress = position
+        }
     }
 
     // 미니 플레이어 업데이트 메서드
-    fun updateMiniPlayer(song: Song) {
-        binding.mainMiniplayerTitleTv.text = song.title
-        binding.mainMiniplayerSingerTv.text = song.singer
+    fun updateMiniPlayerUI() {
+        val song = SongManager.currentSong
+
+        if(song != null){
+            binding.mainMiniplayerTitleTv.text = song.title
+            binding.mainMiniplayerSingerTv.text = song.singer
+            binding.mainMiniplayerBtnPlayIv.visibility =
+                if(SongManager.isPlaying) View.GONE else View.VISIBLE
+            binding.mainMiniplayerBtnPauseIv.visibility =
+                if(SongManager.isPlaying) View.VISIBLE else View.GONE
+        } else{
+            binding.mainMiniplayerTitleTv.text = "현재 재생 중인 곡이 없습니다."
+            binding.mainMiniplayerSingerTv.text = ""
+            binding.mainMiniplayerSeekbarSb.progress = 0
+            binding.mainMiniplayerBtnPlayIv.visibility = View.VISIBLE
+            binding.mainMiniplayerBtnPauseIv.visibility = View.GONE
+        }
     }
 
     // 하단 네비게이션 바 버튼 별 화면 전환 메서드
@@ -74,5 +120,11 @@ class MainActivity : AppCompatActivity() {
             }
             false
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        SongManager.removeListener(this)
+        progressTask?.let { handler.removeCallbacks(it) }
     }
 }

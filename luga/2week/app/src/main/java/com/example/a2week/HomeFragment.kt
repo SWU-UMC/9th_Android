@@ -101,7 +101,7 @@ class HomeFragment : Fragment() {
             todayAlbumList,
             onClick = { clickedAlbum -> openAlbumFragment(clickedAlbum) },
             onPlayClick = { clickedAlbum ->
-                (activity as? MainActivity)?.updateMiniPlayer(clickedAlbum)
+                (activity as? MainActivity)?.updateMiniPlayerUI()
             })
 
         binding.homeTodayMusicRv.apply {

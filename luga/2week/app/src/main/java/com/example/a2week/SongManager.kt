@@ -1,70 +1,128 @@
 package com.example.a2week
 
+import android.content.Context
+import android.media.MediaPlayer
 import android.util.Log
 
+// 싱글톤 관리자
 object SongManager{
-    var song: Song? = null
-    var isPlaying: Boolean = false
-    var timer: Timer? = null
+    private var mediaPlayer: MediaPlayer? = null
+    private var isPrepared = false
+    var isPlaying = false
+        private set
+    var currentSong: Song? = null
+        private set
 
-    fun start(song: Song){
-        this.song = song
-        this.isPlaying = song.isPlaying
+    private var lastPos: Int = 0
 
-        timer?.interrupt()
-        timer = Timer(song.playTime, song.isPlaying, song.second)
-        timer?.start()
+    interface OnPlaybackStateChangeListener{
+        fun onPlay()
+        fun onPausePlayback()
+        fun onPlaybackStateChanged(position: Int, duration: Int)
+    }
+
+    private val listeners = mutableListOf<OnPlaybackStateChangeListener>()
+
+    fun addListener(listener: OnPlaybackStateChangeListener){
+        if(!listeners.contains(listener)) listeners.add(listener)
+    }
+
+    fun removeListener(listener: OnPlaybackStateChangeListener){
+        listeners.remove(listener)
+    }
+
+    fun init(context: Context, resId: Int, song: Song) {
+        try {
+            val isSameSong = (currentSong?.title == song.title) && (currentSong?.singer == song.singer)
+            currentSong = song
+            if(!isSameSong) lastPos = 0
+            isPrepared = false
+
+            mediaPlayer?.release()
+            mediaPlayer = MediaPlayer().apply {
+                val afd = context.resources.openRawResourceFd(resId)
+                setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
+                afd.close()
+
+                setOnPreparedListener { mp ->
+                    isPrepared = true
+                    mp.seekTo(lastPos)
+                    listeners.forEach { listener -> listener.onPlaybackStateChanged(0, mp.duration) }
+                }
+                setOnCompletionListener {
+                    this@SongManager.isPlaying = false
+                    lastPos = 0
+                    listeners.forEach { it.onPausePlayback() }
+                }
+
+                prepareAsync()
+            }
+        } catch (e: Exception) {
+            Log.e("SongManager", "Init failed: ${e.message}")
+        }
+    }
+
+
+    fun play(){
+        mediaPlayer?.let{ mp ->
+            if(!isPrepared){
+                mp.setOnPreparedListener { preparedMp ->
+                    isPrepared = true
+                    preparedMp.start()
+                    isPlaying = true
+                    listeners.forEach { it.onPlay() }
+                    listeners.forEach { listener -> listener.onPlaybackStateChanged(preparedMp.currentPosition, preparedMp.duration) }
+                }
+            }
+            else{
+                try{
+                    mp.start()
+                    isPlaying = true
+                    listeners.forEach { it.onPlay() }
+                } catch(e:IllegalStateException){
+                    Log.e("SongManager", "Play failed: ${e.message}")
+                }
+            }
+        }
     }
 
     fun pause(){
-        song?.isPlaying = false
-        isPlaying = false
-        timer?.isPlaying = false
-    }
-
-    fun restart(){
-        song?.isPlaying = true
-        isPlaying = true
-        timer?.isPlaying = true
-    }
-
-    fun reset(){
-        song?.second = 0
-        timer?.interrupt()
-        timer = Timer(song?.playTime?: 0, song?.isPlaying?: false, 0)
-        timer?.start()
-    }
-    
-    fun getProgress(): Int{
-        val song = song?: return 0
-        return (song.second * 1000 / song.playTime)
-    }
-
-    class Timer(private val playTime: Int, var isPlaying: Boolean = true, startSecond: Int = 0):Thread(){
-        var second: Int = startSecond
-        private var lastTime = System.currentTimeMillis()
-
-        override fun run() {
+        mediaPlayer?.let {
             try{
-                while(second < playTime) {
-                    if (isPlaying) {
-                        val now = System.currentTimeMillis()
-                        if(now - lastTime >= 1000){
-                            second++
-                            lastTime += 1000
-                            song?.second = second
-                        }
-                    }
-                    sleep(200)
-                }
-            } catch(e: InterruptedException){
-                Log.d("SongManager", "타이머 중단.${e.message}")
+                it.pause()
+                lastPos = it.currentPosition
+                isPlaying = false
+                listeners.forEach{ it.onPausePlayback() }
+            } catch (e: IllegalStateException){
+                Log.e("SongManager", "Pause failed: ${e.message}")
             }
         }
+    }
 
-        fun stopTimer(){
-            timer?.interrupt()
-            timer = null
+    fun seekTo(position: Int){
+        mediaPlayer?.let{
+            try{
+                it.seekTo(position)
+                lastPos = position
+                listeners.forEach { listener -> listener.onPlaybackStateChanged(position, it.duration) }
+            } catch (e: IllegalStateException){
+                Log.e("SongManager", "Seek failed: ${e.message}")
+            }
         }
+    }
+
+    fun updateProgress() {
+        mediaPlayer?.let {
+            lastPos = it.currentPosition
+            listeners.forEach { listener -> listener.onPlaybackStateChanged(lastPos, it.duration) }
+        }
+    }
+
+    fun release(){
+        mediaPlayer?.release()
+        mediaPlayer = null
+        isPrepared = false
+        isPlaying = false
+        lastPos = 0
     }
 }
