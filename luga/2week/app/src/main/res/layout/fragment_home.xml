@@ -67,6 +67,8 @@
             android:id="@+id/home_panel_indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:ci_drawable="@drawable/indicator_dot"
             app:layout_constraintTop_toBottomOf="@id/home_panel_background_iv"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />

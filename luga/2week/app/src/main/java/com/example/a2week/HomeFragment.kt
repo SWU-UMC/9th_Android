@@ -62,11 +62,14 @@ class HomeFragment : Fragment() {
             )
         }
 
-        binding.homeTopBannerVp.adapter = bannerAdapter
-        binding.homeTopBannerVp.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-
+        binding.homeTopBannerVp.apply{
+            adapter = bannerAdapter
+            orientation = ViewPager2.ORIENTATION_HORIZONTAL
+        }
         // 인디케이터 연결
-        binding.homePanelIndicator.setViewPager(binding.homeTopBannerVp)
+        binding.homeTopBannerVp.post{
+            binding.homePanelIndicator.setViewPager(binding.homeTopBannerVp)
+        }
 
         // 자동 슬라이드
         val handler = Handler(Looper.getMainLooper())

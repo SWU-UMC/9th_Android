@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.a2week.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(),SongManager.OnPlaybackStateChangeListener {
@@ -13,11 +14,17 @@ class MainActivity : AppCompatActivity(),SongManager.OnPlaybackStateChangeListen
     lateinit var binding : ActivityMainBinding
     private val handler = Handler(Looper.getMainLooper())
     private var progressTask : Runnable? = null
+    private var splashFinished = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
+        splashScreen.setKeepOnScreenCondition { !splashFinished }
+
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        handler.postDelayed({splashFinished = true}, 2000)
 
         // SongManager 초기화
         SongManager.addListener(this)
