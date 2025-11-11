@@ -14,5 +14,6 @@ data class AlbumData(
     val img: Int,
     val title: String,
     val singer: String,
-    var isPlaying: Boolean = false
+    var isPlaying: Boolean = false,
+    var isLike: Boolean = false
 ) : Parcelable

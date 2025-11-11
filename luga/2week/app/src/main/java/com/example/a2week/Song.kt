@@ -14,5 +14,7 @@ data class Song(
     var playTime: Int = 0,
     var isPlaying: Boolean = false,
     var music: String = "",
+    var coverImg: Int? = null,
+    var isLike: Boolean = false,
     var albumIdx: Int = 0
 )
