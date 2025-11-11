@@ -2,6 +2,7 @@ package com.example.a2week
 
 import android.content.Context
 import android.media.MediaPlayer
+import android.provider.MediaStore
 import android.util.Log
 
 // 싱글톤 관리자
@@ -66,22 +67,22 @@ object SongManager{
     fun play(){
         mediaPlayer?.let{ mp ->
             if(!isPrepared){
-                mp.setOnPreparedListener { preparedMp ->
-                    isPrepared = true
-                    preparedMp.start()
-                    isPlaying = true
-                    listeners.forEach { it.onPlay() }
-                    listeners.forEach { listener -> listener.onPlaybackStateChanged(preparedMp.currentPosition, preparedMp.duration) }
-                }
+//                mp.setOnPreparedListener { preparedMp ->
+//                    isPrepared = true
+//                    preparedMp.start()
+//                    isPlaying = true
+//                    listeners.forEach { it.onPlay() }
+//                    listeners.forEach { listener -> listener.onPlaybackStateChanged(preparedMp.currentPosition, preparedMp.duration) }
+//                }
+                Log.w("SongManager", "play() called before prepare - ignored")
+                return
             }
-            else{
-                try{
-                    mp.start()
-                    isPlaying = true
-                    listeners.forEach { it.onPlay() }
-                } catch(e:IllegalStateException){
-                    Log.e("SongManager", "Play failed: ${e.message}")
-                }
+            try{
+                mp.start()
+                isPlaying = true
+                listeners.forEach { it.onPlay() }
+            } catch(e:IllegalStateException){
+                Log.e("SongManager", "Play failed: ${e.message}")
             }
         }
     }
@@ -97,6 +98,21 @@ object SongManager{
                 Log.e("SongManager", "Pause failed: ${e.message}")
             }
         }
+    }
+
+    fun changeSong(context: Context, song: Song){
+        init(context, song.music, song)
+
+        val localListener = object : MediaPlayer.OnPreparedListener{
+            override fun onPrepared(mp: MediaPlayer) {
+                mp.start()
+                isPlaying = true
+                listeners.forEach { it.onPlay() }
+                listeners.forEach { it.onPlaybackStateChanged(mp.currentPosition, mp.duration) }
+                mp.setOnPreparedListener(null)
+            }
+        }
+        mediaPlayer?.setOnPreparedListener(localListener)
     }
 
     fun seekTo(position: Int){

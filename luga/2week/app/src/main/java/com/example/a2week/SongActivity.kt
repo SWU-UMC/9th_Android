@@ -21,14 +21,21 @@ class SongActivity : AppCompatActivity(), SongManager.OnPlaybackStateChangeListe
 
         SongManager.addListener(this)
 
-        // 현재 재생 중인 곡 정보
-        val song = SongManager.currentSong?: Song("Lilac", "IU")
-        val resId = R.raw.music_lilac
+        // db
+        val db = AppDBProvider.getInstance(this)
+        val songs = db.songDao().getAllSongs()
 
-        if(SongManager.currentSong == null) { SongManager.init(this, resId, song) }
+        // songId 불러오기
+        val sharedPreferences = getSharedPreferences("songPrefs", MODE_PRIVATE)
+        val savedSongId = sharedPreferences.getInt("songId", -1)
 
-        binding.songMusicTitleTv.text = song.title
-        binding.songSingerNameTv.text = song.singer
+        val currentSong = if(savedSongId != -1){songs.find{it.id == savedSongId}?: songs[0]} else{songs[0]}
+
+        val resId = currentSong.music
+        SongManager.init(this, resId, currentSong)
+
+        binding.songMusicTitleTv.text = currentSong.title
+        binding.songSingerNameTv.text = currentSong.singer
 
         // 좌측 상단 버튼
         binding.songDownIb.setOnClickListener { finish() }
@@ -36,8 +43,26 @@ class SongActivity : AppCompatActivity(), SongManager.OnPlaybackStateChangeListe
         // 음악 재생 상태에 따른 버튼 이미지 변화
         binding.songMiniplayerIv.setOnClickListener { SongManager.play() }
         binding.songPauseIv.setOnClickListener { SongManager.pause() }
-        binding.songPreviousIv.setOnClickListener { resetPlayerProgress() }
-        binding.songNextIv.setOnClickListener { resetPlayerProgress() }
+
+        var nowPos = songs.indexOfFirst { it.id == currentSong.id }
+
+        // 이전, 다음 음악 이동 기능 추가
+        binding.songPreviousIv.setOnClickListener {
+            nowPos = if(nowPos - 1 < 0) {songs.size - 1} else nowPos - 1
+            val prevSong = songs[nowPos]
+            SongManager.changeSong(this, prevSong)
+            updateUI(prevSong)
+            saveCurrentSongId(prevSong.id)
+            resetPlayerProgress()
+        }
+        binding.songNextIv.setOnClickListener {
+            nowPos = (nowPos + 1) % songs.size
+            val nextSong = songs[nowPos]
+            SongManager.changeSong(this, nextSong)
+            updateUI(nextSong)
+            saveCurrentSongId(nextSong.id)
+            resetPlayerProgress()
+        }
 
         startUpdatingSeekBar()
     }
@@ -87,6 +112,16 @@ class SongActivity : AppCompatActivity(), SongManager.OnPlaybackStateChangeListe
         SongManager.seekTo(0)
         binding.songProgressbarSb.progress = 0
         binding.songStartTimeTv.text = "00:00"
+    }
+
+    private fun updateUI(song: Song){
+        binding.songMusicTitleTv.text = song.title
+        binding.songSingerNameTv.text = song.singer
+    }
+
+    private fun saveCurrentSongId(id: Int) {
+        val sharedPreferences = getSharedPreferences("songPrefs", MODE_PRIVATE)
+        sharedPreferences.edit().putInt("songId", id).apply()
     }
 
     override fun onDestroy() {
