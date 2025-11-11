@@ -42,8 +42,22 @@ class SongActivity : AppCompatActivity(), SongManager.OnPlaybackStateChangeListe
         binding.songDownIb.setOnClickListener { finish() }
 
         // 음악 재생 상태에 따른 버튼 이미지 변화
-        binding.songMiniplayerIv.setOnClickListener { SongManager.play() }
-        binding.songPauseIv.setOnClickListener { SongManager.pause() }
+        binding.songMiniplayerIv.setOnClickListener {
+            val song = SongManager.currentSong
+            if(song != null){
+                // MediaPlayer가 초기화 안 되어있으면 init
+                if(!SongManager.isPrepared) SongManager.init(this, song.music, song)
+                SongManager.play()
+            }
+        }
+
+        binding.songPauseIv.setOnClickListener {
+            val song = SongManager.currentSong
+            if(song != null){
+                if(!SongManager.isPrepared) SongManager.init(this, song.music, song)
+                SongManager.pause()
+            }
+        }
 
         // 이전, 다음 음악 이동 기능 추가
         binding.songPreviousIv.setOnClickListener {
