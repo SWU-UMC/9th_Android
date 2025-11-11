@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="5dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/saved_album_iv"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/img_album_exp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/saved_album_title_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:text="앨범 이름"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toEndOf="@id/saved_album_iv"
+        app:layout_constraintBottom_toTopOf="@id/saved_album_singer_tv"/>
+
+    <TextView
+        android:id="@+id/saved_album_singer_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="가수 이름"
+        android:textSize="13sp"
+        android:textColor="@color/gray_color"
+        app:layout_constraintStart_toStartOf="@id/saved_album_title_tv"
+        app:layout_constraintTop_toTopOf="@id/saved_album_iv"
+        app:layout_constraintBottom_toBottomOf="@id/saved_album_iv"/>
+
+    <TextView
+        android:id="@+id/saved_album_detail_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2025.10.30 | 정규 | KPOP"
+        android:textSize="13sp"
+        android:textColor="@color/gray_color"
+        app:layout_constraintTop_toBottomOf="@id/saved_album_singer_tv"
+        app:layout_constraintStart_toStartOf="@id/saved_album_title_tv"/>
+
+    <ImageView
+        android:id="@+id/song_play_iv"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/btn_miniplayer_play"
+        app:layout_constraintBottom_toBottomOf="@id/song_more_iv"
+        app:layout_constraintEnd_toStartOf="@id/song_more_iv"
+        app:layout_constraintTop_toTopOf="@id/song_more_iv"/>
+
+    <ImageView
+        android:id="@+id/song_more_iv"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/btn_player_more"
+        app:layout_constraintTop_toTopOf="@id/saved_album_title_tv"
+        app:layout_constraintBottom_toBottomOf="@id/saved_album_detail_tv"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

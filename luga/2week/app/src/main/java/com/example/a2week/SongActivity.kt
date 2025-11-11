@@ -1,53 +1,97 @@
 package com.example.a2week
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.example.a2week.databinding.ActivityMainBinding
+import androidx.lifecycle.lifecycleScope
 import com.example.a2week.databinding.ActivitySongBinding
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
-class SongActivity : AppCompatActivity() {
+class SongActivity : AppCompatActivity(), SongManager.OnPlaybackStateChangeListener {
     lateinit var binding: ActivitySongBinding
+    private var updateJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         binding = ActivitySongBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 전달받은 제목 & 가수명 세팅
-        if(intent.hasExtra("title") && intent.hasExtra("singer")){
-            binding.songMusicTitleTv.text = intent.getStringExtra("title")
-            binding.songSingerNameTv.text = intent.getStringExtra("singer")
-        }
+        SongManager.addListener(this)
 
-        binding.songDownIb.setOnClickListener {
-            val resultIntent = Intent().apply{
-                putExtra("albumTitle", binding.songMusicTitleTv.text.toString())
-            }
-            setResult(RESULT_OK, resultIntent) // 결과 코드 & 데이터 설정
-            finish() // MainActivity로 전환
-        }
+        // 현재 재생 중인 곡 정보
+        val song = SongManager.currentSong?: Song("Lilac", "IU")
+        val resId = R.raw.music_lilac
+
+        if(SongManager.currentSong == null) { SongManager.init(this, resId, song) }
+
+        binding.songMusicTitleTv.text = song.title
+        binding.songSingerNameTv.text = song.singer
+
+        // 좌측 상단 버튼
+        binding.songDownIb.setOnClickListener { finish() }
 
         // 음악 재생 상태에 따른 버튼 이미지 변화
-        binding.songMiniplayerIv.setOnClickListener {
-            setPlayerStatus(false)
-        }
+        binding.songMiniplayerIv.setOnClickListener { SongManager.play() }
+        binding.songPauseIv.setOnClickListener { SongManager.pause() }
+        binding.songPreviousIv.setOnClickListener { resetPlayerProgress() }
+        binding.songNextIv.setOnClickListener { resetPlayerProgress() }
 
-        binding.songPauseIv.setOnClickListener {
-            setPlayerStatus(true)
-        }
-
+        startUpdatingSeekBar()
     }
 
-    fun setPlayerStatus(isPlaying : Boolean){
-        if(isPlaying){
-            binding.songMiniplayerIv.visibility = View.VISIBLE
-            binding.songPauseIv.visibility = View.GONE
-        }
-        else{
+    override fun onPlay(){
+        runOnUiThread {
             binding.songMiniplayerIv.visibility = View.GONE
             binding.songPauseIv.visibility = View.VISIBLE
         }
+    }
+
+    override fun onPausePlayback(){
+        runOnUiThread {
+            binding.songMiniplayerIv.visibility = View.VISIBLE
+            binding.songPauseIv.visibility = View.GONE
+        }
+    }
+
+    override fun onPlaybackStateChanged(position: Int, duration: Int){
+        runOnUiThread {
+            binding.songProgressbarSb.max = duration
+            binding.songProgressbarSb.progress = position
+
+            val posSec = position / 1000
+            val durSec = duration / 1000
+            binding.songStartTimeTv.text = String.format("%02d:%02d", posSec / 60, posSec % 60)
+            binding.songEndTimeTv.text = String.format("%02d:%02d", durSec / 60, durSec % 60)
+        }
+    }
+
+    private fun startUpdatingSeekBar(){
+        if(updateJob != null) return
+        updateJob = lifecycleScope.launch{
+            while (isActive) {
+                if(SongManager.isPlaying) SongManager.updateProgress()
+                delay(1000)
+            }
+        }
+    }
+
+    private fun stopUpdatingSeekBar(){
+        updateJob?.cancel()
+        updateJob = null
+    }
+
+    private fun resetPlayerProgress() {
+        SongManager.seekTo(0)
+        binding.songProgressbarSb.progress = 0
+        binding.songStartTimeTv.text = "00:00"
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopUpdatingSeekBar()
+        SongManager.removeListener(this)
     }
 }

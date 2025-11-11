@@ -24,11 +24,29 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" >
 
+        <SeekBar
+            android:id="@+id/main_miniplayer_seekbar_sb"
+            android:layout_width="0dp"
+            android:layout_height="10dp"
+            android:background="@null"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:progress="0"
+            android:progressBackgroundTint="@color/song_player_bg"
+            android:progressTint="@color/song_player"
+            android:thumb="@color/transparent"
+            android:max="100000"
+            app:layout_constraintStart_toStartOf="@id/main_miniplayer_info_ll"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/main_miniplayer_btns_ll"/>
+
         <!-- 미니 플레이어 (곡명 & 가수명) -->
         <LinearLayout
+            android:id="@+id/main_miniplayer_info_ll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -52,9 +70,12 @@
 
         <!-- 미니 플레이어 (우측 버튼) -->
         <LinearLayout
+            android:id="@+id/main_miniplayer_btns_ll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
