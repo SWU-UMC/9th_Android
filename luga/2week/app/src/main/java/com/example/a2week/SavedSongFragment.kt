@@ -22,18 +22,18 @@ class SavedSongFragment: Fragment() {
 
         // 샘플 data
         val savedSongs = mutableListOf(
-            AlbumData(R.drawable.img_album_exp, "노래 이름", "가수 이름"),
-            AlbumData(R.drawable.img_album_exp, "노래 이름", "가수 이름"),
-            AlbumData(R.drawable.img_album_exp2, "노래 이름", "가수 이름"),
-            AlbumData(R.drawable.img_album_exp2, "노래 이름", "가수 이름"),
-            AlbumData(R.drawable.img_album_exp, "노래 이름", "가수 이름"),
-            AlbumData(R.drawable.img_album_exp, "노래 이름", "가수 이름"),
-            AlbumData(R.drawable.img_album_exp2, "노래 이름", "가수 이름"),
-            AlbumData(R.drawable.img_album_exp2, "노래 이름", "가수 이름"),
-            AlbumData(R.drawable.img_album_exp, "노래 이름", "가수 이름"),
-            AlbumData(R.drawable.img_album_exp, "노래 이름", "가수 이름"),
-            AlbumData(R.drawable.img_album_exp2, "노래 이름", "가수 이름"),
-            AlbumData(R.drawable.img_album_exp2, "노래 이름", "가수 이름"))
+            AlbumData(img = R.drawable.img_album_exp, title = "노래 이름", singer = "가수 이름"),
+            AlbumData(img = R.drawable.img_album_exp, title = "노래 이름", singer = "가수 이름"),
+            AlbumData(img = R.drawable.img_album_exp2, title = "노래 이름", singer = "가수 이름"),
+            AlbumData(img = R.drawable.img_album_exp2, title = "노래 이름", singer = "가수 이름"),
+            AlbumData(img = R.drawable.img_album_exp, title = "노래 이름", singer = "가수 이름"),
+            AlbumData(img = R.drawable.img_album_exp, title = "노래 이름", singer = "가수 이름"),
+            AlbumData(img = R.drawable.img_album_exp2, title = "노래 이름", singer = "가수 이름"),
+            AlbumData(img = R.drawable.img_album_exp2, title = "노래 이름", singer = "가수 이름"),
+            AlbumData(img = R.drawable.img_album_exp, title = "노래 이름", singer = "가수 이름"),
+            AlbumData(img = R.drawable.img_album_exp, title = "노래 이름", singer = "가수 이름"),
+            AlbumData(img = R.drawable.img_album_exp2, title = "노래 이름", singer = "가수 이름"),
+            AlbumData(img = R.drawable.img_album_exp2, title = "노래 이름", singer = "가수 이름"))
 
         val adapter = SavedSongAdapter(savedSongs) { clickedSong ->
             val bundle = Bundle().apply {
