@@ -29,13 +29,14 @@ class SongActivity : AppCompatActivity(), SongManager.OnPlaybackStateChangeListe
         val sharedPreferences = getSharedPreferences("songPrefs", MODE_PRIVATE)
         val savedSongId = sharedPreferences.getInt("songId", -1)
 
-        val currentSong = if(savedSongId != -1){songs.find{it.id == savedSongId}?: songs[0]} else{songs[0]}
+        val currentSong = SongManager.currentSong?: run{
+            val song = if(savedSongId != -1) songs.find{it.id == savedSongId}?: songs[0] else songs[0]
+            SongManager.init(this, song.music, song)
+            song
+        }
+        var nowPos = songs.indexOfFirst { it.id == currentSong.id }
 
-        val resId = currentSong.music
-        SongManager.init(this, resId, currentSong)
-
-        binding.songMusicTitleTv.text = currentSong.title
-        binding.songSingerNameTv.text = currentSong.singer
+        updateUI(currentSong)
 
         // 좌측 상단 버튼
         binding.songDownIb.setOnClickListener { finish() }
@@ -43,8 +44,6 @@ class SongActivity : AppCompatActivity(), SongManager.OnPlaybackStateChangeListe
         // 음악 재생 상태에 따른 버튼 이미지 변화
         binding.songMiniplayerIv.setOnClickListener { SongManager.play() }
         binding.songPauseIv.setOnClickListener { SongManager.pause() }
-
-        var nowPos = songs.indexOfFirst { it.id == currentSong.id }
 
         // 이전, 다음 음악 이동 기능 추가
         binding.songPreviousIv.setOnClickListener {
@@ -117,6 +116,14 @@ class SongActivity : AppCompatActivity(), SongManager.OnPlaybackStateChangeListe
     private fun updateUI(song: Song){
         binding.songMusicTitleTv.text = song.title
         binding.songSingerNameTv.text = song.singer
+
+        if(SongManager.isPlaying){
+            binding.songMiniplayerIv.visibility = View.GONE
+            binding.songPauseIv.visibility = View.VISIBLE
+        }else{
+            binding.songMiniplayerIv.visibility = View.VISIBLE
+            binding.songPauseIv.visibility = View.GONE
+        }
     }
 
     private fun saveCurrentSongId(id: Int) {
