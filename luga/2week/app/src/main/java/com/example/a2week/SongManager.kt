@@ -5,9 +5,10 @@ import android.media.MediaPlayer
 import android.util.Log
 
 // 싱글톤 관리자
-object SongManager{
+object SongManager {
     private var mediaPlayer: MediaPlayer? = null
-    private var isPrepared = false
+    var isPrepared = false
+        private set
     var isPlaying = false
         private set
     var currentSong: Song? = null
@@ -15,7 +16,7 @@ object SongManager{
 
     private var lastPos: Int = 0
 
-    interface OnPlaybackStateChangeListener{
+    interface OnPlaybackStateChangeListener {
         fun onPlay()
         fun onPausePlayback()
         fun onPlaybackStateChanged(position: Int, duration: Int)
@@ -23,19 +24,20 @@ object SongManager{
 
     private val listeners = mutableListOf<OnPlaybackStateChangeListener>()
 
-    fun addListener(listener: OnPlaybackStateChangeListener){
-        if(!listeners.contains(listener)) listeners.add(listener)
+    fun addListener(listener: OnPlaybackStateChangeListener) {
+        if (!listeners.contains(listener)) listeners.add(listener)
     }
 
-    fun removeListener(listener: OnPlaybackStateChangeListener){
+    fun removeListener(listener: OnPlaybackStateChangeListener) {
         listeners.remove(listener)
     }
 
     fun init(context: Context, resId: Int, song: Song) {
         try {
-            val isSameSong = (currentSong?.title == song.title) && (currentSong?.singer == song.singer)
+            val isSameSong =
+                (currentSong?.title == song.title) && (currentSong?.singer == song.singer)
             currentSong = song
-            if(!isSameSong) lastPos = 0
+            if (!isSameSong) lastPos = 0
             isPrepared = false
 
             mediaPlayer?.release()
@@ -47,7 +49,12 @@ object SongManager{
                 setOnPreparedListener { mp ->
                     isPrepared = true
                     mp.seekTo(lastPos)
-                    listeners.forEach { listener -> listener.onPlaybackStateChanged(0, mp.duration) }
+                    listeners.forEach { listener ->
+                        listener.onPlaybackStateChanged(
+                            0,
+                            mp.duration
+                        )
+                    }
                 }
                 setOnCompletionListener {
                     this@SongManager.isPlaying = false
@@ -63,49 +70,65 @@ object SongManager{
     }
 
 
-    fun play(){
-        mediaPlayer?.let{ mp ->
-            if(!isPrepared){
-                mp.setOnPreparedListener { preparedMp ->
-                    isPrepared = true
-                    preparedMp.start()
-                    isPlaying = true
-                    listeners.forEach { it.onPlay() }
-                    listeners.forEach { listener -> listener.onPlaybackStateChanged(preparedMp.currentPosition, preparedMp.duration) }
+    fun play() {
+        mediaPlayer?.let { mp ->
+            try {
+                if (!isPrepared) {
+                    mp.setOnPreparedListener { preparedMp ->
+                        isPrepared = true
+                        preparedMp.seekTo(lastPos)
+                        preparedMp.start()
+                        isPlaying = true
+                        listeners.forEach { it.onPlay() }
+                        listeners.forEach { listener ->
+                            listener.onPlaybackStateChanged(
+                                preparedMp.currentPosition,
+                                preparedMp.duration
+                            )
+                        }
+                        preparedMp.setOnPreparedListener(null)
+                    }
+                    if (!mp.isPlaying) mp.prepareAsync()
+                    return
                 }
-            }
-            else{
-                try{
-                    mp.start()
-                    isPlaying = true
-                    listeners.forEach { it.onPlay() }
-                } catch(e:IllegalStateException){
-                    Log.e("SongManager", "Play failed: ${e.message}")
-                }
+                if (!mp.isPlaying) mp.start()
+                isPlaying = true
+                listeners.forEach { it.onPlay() }
+            } catch (e: IllegalStateException) {
+                Log.e("SongManager", "Play failed: ${e.message}")
             }
         }
     }
 
-    fun pause(){
+    fun pause() {
         mediaPlayer?.let {
-            try{
+            try {
                 it.pause()
                 lastPos = it.currentPosition
                 isPlaying = false
-                listeners.forEach{ it.onPausePlayback() }
-            } catch (e: IllegalStateException){
+                listeners.forEach { it.onPausePlayback() }
+            } catch (e: IllegalStateException) {
                 Log.e("SongManager", "Pause failed: ${e.message}")
             }
         }
     }
 
-    fun seekTo(position: Int){
-        mediaPlayer?.let{
-            try{
+    fun changeSong(context: Context, song: Song) {
+        init(context, song.music, song)
+    }
+
+    fun seekTo(position: Int) {
+        mediaPlayer?.let {
+            try {
                 it.seekTo(position)
                 lastPos = position
-                listeners.forEach { listener -> listener.onPlaybackStateChanged(position, it.duration) }
-            } catch (e: IllegalStateException){
+                listeners.forEach { listener ->
+                    listener.onPlaybackStateChanged(
+                        position,
+                        it.duration
+                    )
+                }
+            } catch (e: IllegalStateException) {
                 Log.e("SongManager", "Seek failed: ${e.message}")
             }
         }
@@ -114,11 +137,16 @@ object SongManager{
     fun updateProgress() {
         mediaPlayer?.let {
             lastPos = it.currentPosition
-            listeners.forEach { listener -> listener.onPlaybackStateChanged(lastPos, it.duration) }
+            listeners.forEach { listener ->
+                listener.onPlaybackStateChanged(
+                    lastPos,
+                    it.duration
+                )
+            }
         }
     }
 
-    fun release(){
+    fun release() {
         mediaPlayer?.release()
         mediaPlayer = null
         isPrepared = false

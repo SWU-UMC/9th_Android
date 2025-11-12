@@ -1,18 +1,25 @@
 package com.example.a2week
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.a2week.databinding.ActivitySongBinding
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import com.google.firebase.database.*
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.*
 
 class SongActivity : AppCompatActivity(), SongManager.OnPlaybackStateChangeListener {
     lateinit var binding: ActivitySongBinding
     private var updateJob: Job? = null
+
+    //firebase
+    private val firebaseDb = Firebase.database.getReference("likes")
+    private var likeListener: ValueEventListener? = null
+
+
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
@@ -21,25 +28,111 @@ class SongActivity : AppCompatActivity(), SongManager.OnPlaybackStateChangeListe
 
         SongManager.addListener(this)
 
-        // 현재 재생 중인 곡 정보
-        val song = SongManager.currentSong?: Song("Lilac", "IU")
-        val resId = R.raw.music_lilac
+        // db
+//        val db = AppDBProvider.getInstance(this)
+//        val songs = db.songDao().getAllSongs()
+        val songs = mutableListOf(
+            Song(id = 1, title = "Lilac", singer = "IU", music = R.raw.music_lilac),
+            Song(id = 2, title = "Blueming", singer = "IU", music = R.raw.music_blueming),
+            Song(id = 3, title = "노래3", singer = "가수3", music = R.raw.music_lilac)
+        )
 
-        if(SongManager.currentSong == null) { SongManager.init(this, resId, song) }
+        // songId 불러오기
+        val sharedPreferences = getSharedPreferences("songPrefs", MODE_PRIVATE)
+        val savedSongId = sharedPreferences.getInt("songId", -1)
 
-        binding.songMusicTitleTv.text = song.title
-        binding.songSingerNameTv.text = song.singer
+        val currentSong = SongManager.currentSong?: run{
+            val song = if(savedSongId != -1) songs.find{it.id == savedSongId}?: songs[0] else songs[0]
+            SongManager.init(this, song.music, song)
+            song
+        }
+        var nowPos = songs.indexOfFirst { it.id == currentSong.id }
+        updateUI(currentSong)
+        observeLikeStatus(currentSong)
 
         // 좌측 상단 버튼
         binding.songDownIb.setOnClickListener { finish() }
 
         // 음악 재생 상태에 따른 버튼 이미지 변화
-        binding.songMiniplayerIv.setOnClickListener { SongManager.play() }
-        binding.songPauseIv.setOnClickListener { SongManager.pause() }
-        binding.songPreviousIv.setOnClickListener { resetPlayerProgress() }
-        binding.songNextIv.setOnClickListener { resetPlayerProgress() }
+        binding.songMiniplayerIv.setOnClickListener {
+            val song = SongManager.currentSong
+            if(song != null){
+                // MediaPlayer가 초기화 안 되어있으면 init
+                if(!SongManager.isPrepared) SongManager.init(this, song.music, song)
+                SongManager.play()
+            }
+        }
+
+        binding.songPauseIv.setOnClickListener {
+            val song = SongManager.currentSong
+            if(song != null){
+                if(!SongManager.isPrepared) SongManager.init(this, song.music, song)
+                SongManager.pause()
+            }
+        }
+
+        // 이전, 다음 음악 이동 기능 추가
+        binding.songPreviousIv.setOnClickListener {
+            nowPos = if(nowPos - 1 < 0) {songs.size - 1} else nowPos - 1
+            val prevSong = songs[nowPos]
+            SongManager.changeSong(this, prevSong)
+            updateUI(prevSong)
+            saveCurrentSongId(prevSong.id)
+            resetPlayerProgress()
+            observeLikeStatus(prevSong)
+        }
+        binding.songNextIv.setOnClickListener {
+            nowPos = (nowPos + 1) % songs.size
+            val nextSong = songs[nowPos]
+            SongManager.changeSong(this, nextSong)
+            updateUI(nextSong)
+            saveCurrentSongId(nextSong.id)
+            resetPlayerProgress()
+            observeLikeStatus(nextSong)
+        }
+
+        // 하트 버튼
+        binding.songLikeIv.setOnClickListener {
+            val currentSong = SongManager.currentSong?: return@setOnClickListener
+    //        val db = AppDBProvider.getInstance(this)
+
+            currentSong.isLike = !currentSong.isLike
+            updateLikeIcon(currentSong.isLike)
+
+            songs[nowPos].isLike = currentSong.isLike
+            firebaseDb.child(currentSong.id.toString()).setValue(currentSong.isLike)
+    //        db.songDao().updateSong(currentSong)
+
+            // 애니메이션
+            if(currentSong.isLike) showHearthAnimation()
+        }
 
         startUpdatingSeekBar()
+        SongManager.currentSong?.let{updateLikeIcon(it.isLike)}
+    }
+
+    // firebase 실시간 연동
+    private fun observeLikeStatus(song: Song){
+        likeListener?.let{firebaseDb.child(song.id.toString()).removeEventListener(it)}
+        likeListener = firebaseDb.child(song.id.toString())
+            .addValueEventListener(object: ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val isLiked = snapshot.getValue(Boolean::class.java) ?: false
+                    song.isLike = isLiked
+                    updateLikeIcon(isLiked)
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle error
+                    Log.e("Firebase", "Database error", error.toException())
+                }
+            })
+
+    }
+
+    private fun updateLikeIcon(isLike: Boolean){
+        binding.songLikeIv.setImageResource(
+            if (isLike) R.drawable.ic_my_like_on else R.drawable.ic_my_like_off
+        )
     }
 
     override fun onPlay(){
@@ -89,9 +182,54 @@ class SongActivity : AppCompatActivity(), SongManager.OnPlaybackStateChangeListe
         binding.songStartTimeTv.text = "00:00"
     }
 
+    private fun updateUI(song: Song){
+        binding.songMusicTitleTv.text = song.title
+        binding.songSingerNameTv.text = song.singer
+
+        if(SongManager.isPlaying){
+            binding.songMiniplayerIv.visibility = View.GONE
+            binding.songPauseIv.visibility = View.VISIBLE
+        }else{
+            binding.songMiniplayerIv.visibility = View.VISIBLE
+            binding.songPauseIv.visibility = View.GONE
+        }
+    }
+
+    private fun saveCurrentSongId(id: Int) {
+        val sharedPreferences = getSharedPreferences("songPrefs", MODE_PRIVATE)
+        sharedPreferences.edit().putInt("songId", id).apply()
+    }
+
+    // 좋아요 하트 팝업
+    private fun showHearthAnimation(){
+        val heart = binding.likePopupIv
+        heart.visibility = View.VISIBLE
+
+        // 초기
+        heart.scaleX = 0f
+        heart.scaleY = 0f
+        heart.alpha = 0f
+
+        // 실행
+        heart.animate()
+            .scaleX(1.5f)
+            .scaleY(1.5f)
+            .alpha(1f)
+            .setDuration(200)
+            .withEndAction {
+                heart.animate()
+                    .scaleX(0f)
+                    .scaleY(0f)
+                    .alpha(0f)
+                    .setDuration(200)
+                    .withEndAction { heart.visibility = View.GONE }.start()
+            }.start()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         stopUpdatingSeekBar()
         SongManager.removeListener(this)
+        likeListener?.let{firebaseDb.removeEventListener(it)}
     }
 }

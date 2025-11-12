@@ -12,13 +12,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.a2week.databinding.FragmentHomeBinding
-import com.google.android.material.tabs.TabLayoutMediator
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
     private var bannerPosition = 0
+    private var bannerRunnable: Runnable? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,15 +43,15 @@ class HomeFragment : Fragment() {
             HomePannelData(
                 title = "오늘의 추천 노래",
                 songs = listOf(
-                    AlbumData(R.drawable.img_album_exp, "Dynamite", "BTS"),
-                    AlbumData(R.drawable.img_album_exp, "Butter", "BTS")
+                    AlbumData(img = R.drawable.img_album_exp, title = "Dynamite", singer = "BTS"),
+                    AlbumData(img = R.drawable.img_album_exp, title = "Butter", singer = "BTS")
                 )
             ),
             HomePannelData(
                 title = "달밤의 감성 산책",
                 songs = listOf(
-                    AlbumData(R.drawable.img_album_exp2, "Lilac", "IU"),
-                    AlbumData(R.drawable.img_album_exp2, "Love Wins All", "IU")
+                    AlbumData(img = R.drawable.img_album_exp2, title = "Lilac", singer = "IU"),
+                    AlbumData(img = R.drawable.img_album_exp2, title = "Love Wins All", singer = "IU")
                 )
             )
         )
@@ -73,31 +73,31 @@ class HomeFragment : Fragment() {
 
         // 자동 슬라이드
         val handler = Handler(Looper.getMainLooper())
-        val runnable = object: Runnable{
+        bannerRunnable = object: Runnable{
             override fun run(){
                 _binding?.let{
                     bannerPosition = (bannerPosition + 1) % bannerAdapter.itemCount
                     it.homeTopBannerVp.setCurrentItem(bannerPosition, true)
                     handler.postDelayed(this, 3000)
-
                 }
             }
         }
-        handler.postDelayed(runnable, 3000)
+        handler.postDelayed(bannerRunnable!!, 3000)
 
         // 수동 스크롤 시 인디케이터 동기화
         binding.homeTopBannerVp.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
+                bannerPosition = position
             }
         })
 
         // RecycleView 구현 및 아이템 클릭 이벤트
         val todayAlbumList = listOf(
-            AlbumData(R.drawable.img_album_exp2, "LILAC", "아이유(IU)"),
-            AlbumData(R.drawable.img_album_exp2, "Love Wins All", "아이유(IU)"),
-            AlbumData(R.drawable.img_album_exp, "Butter", "BTS"),
-            AlbumData(R.drawable.img_album_exp, "Dynamite", "BTS")
+            AlbumData(img = R.drawable.img_album_exp2, title =  "LILAC", singer = "아이유(IU)"),
+            AlbumData(img = R.drawable.img_album_exp2, title =  "Love Wins All", singer = "아이유(IU)"),
+            AlbumData(img = R.drawable.img_album_exp, title =  "Butter", singer = "BTS"),
+            AlbumData(img = R.drawable.img_album_exp,  title = "Dynamite", singer = "BTS")
         )
 
         val todayMusicAdapter = TodayMusicAdapter(
