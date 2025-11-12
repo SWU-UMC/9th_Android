@@ -13,6 +13,7 @@ class LockerFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val information = arrayListOf("저장한 곡", "음악파일", "저장앨범")
+    private var isEditMode = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,6 +28,22 @@ class LockerFragment : Fragment() {
             tab.text = information[position]
         }.attach()
 
+        binding.lockerSelectAllTv.setOnClickListener {
+            val currentFragment =
+                childFragmentManager.findFragmentByTag("f" + binding.lockerContentVp.currentItem)
+
+            if (currentFragment is SavedSongFragment) {
+                val newState = binding.lockerSelectAllTv.text == "전체 선택"
+                currentFragment.selectAllItems(newState)
+                binding.lockerSelectAllTv.text = if (newState) "선택 해제" else "전체 선택"
+            }
+        }
+
         return binding.root
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }
