@@ -102,6 +102,9 @@ class SongActivity : AppCompatActivity(), SongManager.OnPlaybackStateChangeListe
             songs[nowPos].isLike = currentSong.isLike
             firebaseDb.child(currentSong.id.toString()).setValue(currentSong.isLike)
     //        db.songDao().updateSong(currentSong)
+
+            // 애니메이션
+            if(currentSong.isLike) showHearthAnimation()
         }
 
         startUpdatingSeekBar()
@@ -195,6 +198,32 @@ class SongActivity : AppCompatActivity(), SongManager.OnPlaybackStateChangeListe
     private fun saveCurrentSongId(id: Int) {
         val sharedPreferences = getSharedPreferences("songPrefs", MODE_PRIVATE)
         sharedPreferences.edit().putInt("songId", id).apply()
+    }
+
+    // 좋아요 하트 팝업
+    private fun showHearthAnimation(){
+        val heart = binding.likePopupIv
+        heart.visibility = View.VISIBLE
+
+        // 초기
+        heart.scaleX = 0f
+        heart.scaleY = 0f
+        heart.alpha = 0f
+
+        // 실행
+        heart.animate()
+            .scaleX(1.5f)
+            .scaleY(1.5f)
+            .alpha(1f)
+            .setDuration(200)
+            .withEndAction {
+                heart.animate()
+                    .scaleX(0f)
+                    .scaleY(0f)
+                    .alpha(0f)
+                    .setDuration(200)
+                    .withEndAction { heart.visibility = View.GONE }.start()
+            }.start()
     }
 
     override fun onDestroy() {
