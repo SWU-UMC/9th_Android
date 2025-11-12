@@ -1,18 +1,25 @@
 package com.example.a2week
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.a2week.databinding.ActivitySongBinding
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import com.google.firebase.database.*
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.*
 
 class SongActivity : AppCompatActivity(), SongManager.OnPlaybackStateChangeListener {
     lateinit var binding: ActivitySongBinding
     private var updateJob: Job? = null
+
+    //firebase
+    private val firebaseDb = Firebase.database.getReference("likes")
+    private var likeListener: ValueEventListener? = null
+
+
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
@@ -22,8 +29,13 @@ class SongActivity : AppCompatActivity(), SongManager.OnPlaybackStateChangeListe
         SongManager.addListener(this)
 
         // db
-        val db = AppDBProvider.getInstance(this)
-        val songs = db.songDao().getAllSongs()
+//        val db = AppDBProvider.getInstance(this)
+//        val songs = db.songDao().getAllSongs()
+        val songs = mutableListOf(
+            Song(id = 1, title = "노래1", singer = "가수1", music = R.raw.music_lilac),
+            Song(id = 2, title = "노래2", singer = "가수2", music = R.raw.music_lilac),
+            Song(id = 3, title = "노래3", singer = "가수3", music = R.raw.music_lilac)
+        )
 
         // songId 불러오기
         val sharedPreferences = getSharedPreferences("songPrefs", MODE_PRIVATE)
@@ -35,8 +47,8 @@ class SongActivity : AppCompatActivity(), SongManager.OnPlaybackStateChangeListe
             song
         }
         var nowPos = songs.indexOfFirst { it.id == currentSong.id }
-
         updateUI(currentSong)
+        observeLikeStatus(currentSong)
 
         // 좌측 상단 버튼
         binding.songDownIb.setOnClickListener { finish() }
@@ -67,6 +79,7 @@ class SongActivity : AppCompatActivity(), SongManager.OnPlaybackStateChangeListe
             updateUI(prevSong)
             saveCurrentSongId(prevSong.id)
             resetPlayerProgress()
+            observeLikeStatus(prevSong)
         }
         binding.songNextIv.setOnClickListener {
             nowPos = (nowPos + 1) % songs.size
@@ -75,9 +88,48 @@ class SongActivity : AppCompatActivity(), SongManager.OnPlaybackStateChangeListe
             updateUI(nextSong)
             saveCurrentSongId(nextSong.id)
             resetPlayerProgress()
+            observeLikeStatus(nextSong)
+        }
+
+        // 하트 버튼
+        binding.songLikeIv.setOnClickListener {
+            val currentSong = SongManager.currentSong?: return@setOnClickListener
+    //        val db = AppDBProvider.getInstance(this)
+
+            currentSong.isLike = !currentSong.isLike
+            updateLikeIcon(currentSong.isLike)
+
+            songs[nowPos].isLike = currentSong.isLike
+            firebaseDb.child(currentSong.id.toString()).setValue(currentSong.isLike)
+    //        db.songDao().updateSong(currentSong)
         }
 
         startUpdatingSeekBar()
+        SongManager.currentSong?.let{updateLikeIcon(it.isLike)}
+    }
+
+    // firebase 실시간 연동
+    private fun observeLikeStatus(song: Song){
+        likeListener?.let{firebaseDb.child(song.id.toString()).removeEventListener(it)}
+        likeListener = firebaseDb.child(song.id.toString())
+            .addValueEventListener(object: ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val isLiked = snapshot.getValue(Boolean::class.java) ?: false
+                    song.isLike = isLiked
+                    updateLikeIcon(isLiked)
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle error
+                    Log.e("Firebase", "Database error", error.toException())
+                }
+            })
+
+    }
+
+    private fun updateLikeIcon(isLike: Boolean){
+        binding.songLikeIv.setImageResource(
+            if (isLike) R.drawable.ic_my_like_on else R.drawable.ic_my_like_off
+        )
     }
 
     override fun onPlay(){
@@ -149,5 +201,6 @@ class SongActivity : AppCompatActivity(), SongManager.OnPlaybackStateChangeListe
         super.onDestroy()
         stopUpdatingSeekBar()
         SongManager.removeListener(this)
+        likeListener?.let{firebaseDb.removeEventListener(it)}
     }
 }
