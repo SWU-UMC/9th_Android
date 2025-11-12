@@ -21,7 +21,7 @@ class SavedSongFragment: Fragment(), EditModeHandler {
     private lateinit var bottomNav: BottomNavigationView
     private var isEditMode = false
     private lateinit var adapter: SavedSongAdapter
-    private lateinit var selecAllText: TextView
+    private lateinit var selectAllText: TextView
 
 
     override fun onCreateView(
@@ -32,7 +32,7 @@ class SavedSongFragment: Fragment(), EditModeHandler {
         _binding = FragmentLockerSavedsongBinding.inflate(inflater, container, false)
 
         bottomNav = requireActivity().findViewById(R.id.main_bnv)
-        selecAllText = requireActivity().findViewById(R.id.locker_select_all_tv)
+        selectAllText = requireActivity().findViewById(R.id.locker_select_all_tv)
 
         // 샘플 data
         val savedSongs = mutableListOf(
@@ -134,7 +134,7 @@ class SavedSongFragment: Fragment(), EditModeHandler {
 
     private fun updateSelectAllText() {
         val isAllSelected = adapter.selectedCount() == adapter.itemCount && adapter.itemCount > 0
-        selecAllText.text = if(isAllSelected) "선택 해제" else "전체 선택"
+        selectAllText.text = if(isAllSelected) "선택 해제" else "전체 선택"
     }
 
     private fun restoreDefaultBottomNavListener() {
