@@ -32,8 +32,8 @@ class SongActivity : AppCompatActivity(), SongManager.OnPlaybackStateChangeListe
 //        val db = AppDBProvider.getInstance(this)
 //        val songs = db.songDao().getAllSongs()
         val songs = mutableListOf(
-            Song(id = 1, title = "노래1", singer = "가수1", music = R.raw.music_lilac),
-            Song(id = 2, title = "노래2", singer = "가수2", music = R.raw.music_lilac),
+            Song(id = 1, title = "Lilac", singer = "IU", music = R.raw.music_lilac),
+            Song(id = 2, title = "Blueming", singer = "IU", music = R.raw.music_blueming),
             Song(id = 3, title = "노래3", singer = "가수3", music = R.raw.music_lilac)
         )
 
