@@ -280,4 +280,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
+    <!-- 좋아요 팝업 -->
+    <ImageView
+        android:id="@+id/like_popup_iv"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@drawable/ic_my_like_on"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="gone"
+        app:tint="@color/purple_500" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.a2week.databinding.ItemSavedsongBinding
 
@@ -11,12 +12,23 @@ class SavedSongAdapter(
     private val songList: MutableList<AlbumData>,
     private val onClick: (AlbumData) -> Unit
 ) : RecyclerView.Adapter<SavedSongAdapter.SavedSongViewHolder>() {
+
+    private val selectedSongs = mutableSetOf<AlbumData>()
+    var isSelectionMode = false
+
     inner class SavedSongViewHolder(val binding: ItemSavedsongBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(song: AlbumData) {
             binding.savedSongIv.setImageResource(song.img)
             binding.savedSongTitleTv.text = song.title
             binding.savedSongSingerTv.text = song.singer
+
+            val context = binding.root.context
+            if(selectedSongs.contains(song)){
+                binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.selected_song))
+            }else{
+                binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+            }
 
             // 재생 버튼 상태 변경
             binding.songPlayIv.setImageResource(
@@ -30,7 +42,8 @@ class SavedSongAdapter(
             }
 
             binding.root.setOnClickListener {
-                onClick(song)
+                if(isSelectionMode) toggleSelection(song)
+                else onClick(song)
             }
 
             // [...] 버튼 클릭 이벤트
@@ -63,4 +76,29 @@ class SavedSongAdapter(
     }
 
     override fun getItemCount(): Int = songList.size
+
+    fun toggleSelection(song: AlbumData) {
+        if(selectedSongs.contains(song)) selectedSongs.remove(song)
+        else selectedSongs.add(song)
+        notifyDataSetChanged()
+    }
+
+    fun selectAll(select: Boolean){
+        selectedSongs.clear()
+        if(select) selectedSongs.addAll(songList)
+        notifyDataSetChanged()
+    }
+
+    fun deleteSelected(){
+        songList.removeAll(selectedSongs)
+        selectedSongs.clear()
+        notifyDataSetChanged()
+    }
+
+    fun clearSelection(){
+        selectedSongs.clear()
+        notifyDataSetChanged()
+    }
+
+    fun selectedCount(): Int = selectedSongs.size
 }

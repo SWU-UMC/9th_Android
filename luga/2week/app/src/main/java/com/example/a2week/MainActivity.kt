@@ -16,6 +16,12 @@ class MainActivity : AppCompatActivity(),SongManager.OnPlaybackStateChangeListen
     private var progressTask : Runnable? = null
     private var splashFinished = false
 
+    private lateinit var db: AppDatabase
+    private lateinit var songDao: SongDao
+
+    private lateinit var songs: List<Song>
+    private var nowPos = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition { !splashFinished }
@@ -26,7 +32,30 @@ class MainActivity : AppCompatActivity(),SongManager.OnPlaybackStateChangeListen
 
         handler.postDelayed({splashFinished = true}, 2000)
 
+        // db
+        db = AppDBProvider.getInstance(this)
+        songDao = db.songDao()
+
+        // DB 비었을 때 더미 데이터
+        if(songDao.getAllSongs().isEmpty()){
+            songDao.insertSong(Song(title = "Lilac", singer = "IU", music = R.raw.music_lilac , albumIdx = 1))
+            songDao.insertSong(Song(title = "Blueming", singer = "IU", music = R.raw.music_blueming, albumIdx = 2))
+        }
+        songs = songDao.getAllSongs()
+
+        // songId 불러오기
+        val sharedPreferences = getSharedPreferences("songPrefs", MODE_PRIVATE)
+        val savedSongId = sharedPreferences.getInt("songId", -1)
+
+        // id로 노래 불러오기
+        val currentSong = if(savedSongId != -1) {songDao.getSongById(savedSongId)}
+        else {songDao.getAllSongs().firstOrNull()}
+
         // SongManager 초기화
+        currentSong?.let{
+            saveSongId(it.id)
+            SongManager.init(this, it.music, it)
+        }
         SongManager.addListener(this)
 
         // SongActivity 실행
@@ -37,10 +66,17 @@ class MainActivity : AppCompatActivity(),SongManager.OnPlaybackStateChangeListen
 
         binding.mainMiniplayerBtnPlayIv.setOnClickListener { SongManager.play() }
         binding.mainMiniplayerBtnPauseIv.setOnClickListener { SongManager.pause() }
+        binding.mainMiniplayerBtnPrevIv.setOnClickListener { movePrevSong() }
+        binding.mainMiniplayerBtnNextIv.setOnClickListener { moveNextSong() }
 
         initBottomNavigation()
         startProgressUpdate()
         updateMiniPlayerUI()
+    }
+
+    private fun saveSongId(id: Int) {
+        val sharedPreferences = getSharedPreferences("songPrefs", MODE_PRIVATE)
+        sharedPreferences.edit().putInt("songId", id).apply()
     }
 
     private fun startProgressUpdate(){
@@ -55,6 +91,26 @@ class MainActivity : AppCompatActivity(),SongManager.OnPlaybackStateChangeListen
             }
         }
         handler.post(progressTask!!)
+    }
+
+    private fun movePrevSong(){
+        if(songs.isEmpty()) return
+
+        nowPos = if(nowPos - 1 < 0) {songs.size - 1} else nowPos - 1
+        val prevSong = songs[nowPos]
+        SongManager.changeSong(this, prevSong)
+        saveSongId(prevSong.id)
+        updateMiniPlayerUI()
+    }
+
+    private fun moveNextSong() {
+        if (songs.isEmpty()) return
+
+        nowPos = (nowPos + 1) % songs.size
+        val nextSong = songs[nowPos]
+        SongManager.changeSong(this, nextSong)
+        saveSongId(nextSong.id)
+        updateMiniPlayerUI()
     }
 
     override fun onResume(){
@@ -132,6 +188,9 @@ class MainActivity : AppCompatActivity(),SongManager.OnPlaybackStateChangeListen
     override fun onDestroy() {
         super.onDestroy()
         SongManager.removeListener(this)
-        progressTask?.let { handler.removeCallbacks(it) }
+        progressTask?.let {
+            handler.removeCallbacks(it)
+            progressTask = null
+        }
     }
 }
