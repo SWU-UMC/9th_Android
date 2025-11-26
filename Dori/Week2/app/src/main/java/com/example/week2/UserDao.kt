@@ -1,6 +1,8 @@
 package com.example.week2
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
 
 
 @Dao
@@ -10,6 +12,7 @@ interface UserDao {
 
     @Query("SELECT * FROM UserTable")
     fun getUsers(): List<User>
+
 
     @Query("SELECT * FROM UserTable WHERE email = :email AND password = :password")
     fun getUser(email: String, password: String): User?

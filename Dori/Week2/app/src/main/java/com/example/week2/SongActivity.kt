@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -85,17 +86,39 @@ class SongActivity : AppCompatActivity() {
         val songId = spf.getInt("songId", 1)
 
         val songDB = SongDatabase.getInstance(this)!!
-        val currentSongFromDB = songDB.songDao().getSong(songId)
 
 
-        if (MusicService.currentSong?.id != currentSongFromDB.id) {
-            MusicService.setAndPlay(this, currentSongFromDB)
-        } else {
+        var currentSongFromDB = songDB.songDao().getSong(songId)
+
+
+        if (currentSongFromDB == null) {
+            // DB에 있는 모든 노래를 가져와서 그 중 첫 번째 곡을 쓴다
+            val allSongs = songDB.songDao().getSongs()
+
+            if (allSongs.isNotEmpty()) {
+                currentSongFromDB = allSongs[0]
+
+
+                val editor = getSharedPreferences(SONG_PREFERENCE, MODE_PRIVATE).edit()
+                editor.putInt("songId", currentSongFromDB.id)
+                editor.apply()
+            } else {
+
+                Toast.makeText(this, "노래 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
+                finish()
+                return
+            }
         }
 
 
-        setPlayer(currentSongFromDB)
+        if (MusicService.currentSong?.id != currentSongFromDB!!.id) {
+            MusicService.setAndPlay(this, currentSongFromDB!!, 0, true)
+        }
+
+        setPlayer(currentSongFromDB!!)
         startTimer()
+
+        Log.d("SongActivity_DEBUG", "로드된 곡 ID: ${currentSongFromDB!!.id}")
     }
 
 
@@ -125,7 +148,7 @@ class SongActivity : AppCompatActivity() {
                     val newSecond = (totalSecond * newProgressRatio).toInt()
 
 
-                    MusicService.setAndPlay(this@SongActivity, currentSong, newSecond)
+                    MusicService.setAndPlay(this@SongActivity, currentSong, newSecond, true)
 
 
                     startTimer()
@@ -153,6 +176,10 @@ class SongActivity : AppCompatActivity() {
         binding.btnPrevious.setOnClickListener {
             moveSong(-1)
         }
+
+        binding.ivLike.setOnClickListener {
+            setLike(songs[nowPos].isLike)
+        }
     }
 
 
@@ -163,24 +190,50 @@ class SongActivity : AppCompatActivity() {
     }
 
 
+    private fun setLike(isLike: Boolean){
+
+        songs[nowPos].isLike = !isLike
+
+
+        songDB.songDao().update(songs[nowPos])
+
+
+        if (!isLike){
+            binding.ivLike.setImageResource(R.drawable.ic_my_like_on)
+            Toast.makeText(this, "보관함에 담았습니다.", Toast.LENGTH_SHORT).show()
+        } else {
+            binding.ivLike.setImageResource(R.drawable.ic_my_like_off)
+            Toast.makeText(this, "보관함에서 삭제했습니다.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
     private fun initPlayList(){
         songDB = SongDatabase.getInstance(this)!!
+        songs.clear() // 기존 리스트 비우고
         songs.addAll(songDB.songDao().getSongs())
+    }
+
+    private fun getPlayingSongPosition(songId: Int): Int{
+        for (i in 0 until songs.size){
+            if (songs[i].id == songId){
+                return i
+            }
+        }
+        return 0 // 못 찾으면 0번
     }
 
     private fun setPlayer(song: Song){
 
         binding.tvSongTitle.text = song.title
         binding.tvArtistName.text = song.singer
-        binding.ivAlbumCover.setImageResource(song.coverImg!!)
+        binding.ivAlbumCover.setImageResource(song.coverImg ?: R.drawable.img_album_exp)
 
 
         val totalSecond = MusicService.getDuration() / 1000
-        val currentSecond = MusicService.getCurrentPosition() / 1000
+
 
         binding.tvTotalTime.text = String.format("%02d:%02d", totalSecond / 60, totalSecond % 60)
-
-
         binding.seekBar.max = 1000
 
 
@@ -191,6 +244,12 @@ class SongActivity : AppCompatActivity() {
         } else {
             binding.btnPlay.setImageResource(R.drawable.btn_miniplayer_play)
         }
+
+        if (song.isLike) {
+            binding.ivLike.setImageResource(R.drawable.ic_my_like_on)
+        } else {
+            binding.ivLike.setImageResource(R.drawable.ic_my_like_off)
+        }
     }
 
 
@@ -199,36 +258,29 @@ class SongActivity : AppCompatActivity() {
 
 
     private fun moveSong(direct: Int){
-        // nowPos를 업데이트
+        if (songs.isEmpty()) return
+
         nowPos = getPlayingSongPosition(MusicService.currentSong?.id ?: 1)
-
-        if (nowPos + direct < 0){
-            Toast.makeText(this,"첫 곡입니다.", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        if (nowPos + direct >= songs.size){
-            Toast.makeText(this,"마지막 곡입니다.",Toast.LENGTH_SHORT).show()
-            return
-        }
-
         nowPos += direct
-        val nextSong = songs[nowPos]
 
-        MusicService.setAndPlay(this, nextSong, 0)
-
-        setPlayer(nextSong)
-        startTimer()
-    }
-
-    private fun getPlayingSongPosition(songId: Int): Int{
-        for (i in 0 until songs.size){
-            if (songs[i].id == songId){
-                return i
-            }
+        if (nowPos >= songs.size){
+            nowPos = 0
+            Toast.makeText(this,"마지막 곡입니다.",Toast.LENGTH_SHORT).show()
         }
-        return 0
+        if (nowPos < 0){
+            nowPos = songs.size - 1
+        }
+
+        val nextSong = songs[nowPos]
+        MusicService.setAndPlay(this, nextSong, 0, true)
+        setPlayer(nextSong)
+
+        val editor = getSharedPreferences(SONG_PREFERENCE, MODE_PRIVATE).edit()
+        editor.putInt("songId", nextSong.id)
+        editor.apply()
     }
+
+
 
     private fun returnResultToMainActivity() {
         albumTitle?.let { title ->

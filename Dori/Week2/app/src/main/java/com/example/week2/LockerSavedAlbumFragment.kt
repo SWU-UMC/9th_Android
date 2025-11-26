@@ -55,47 +55,38 @@ class LockerSavedAlbumFragment : Fragment() {
 
             add(
                 Album(
+                    id = 1, // [추가] 1번 앨범
                     title = "Butter",
                     singer = "방탄소년단 (BTS)",
                     coverImg = R.drawable.img_album_exp,
                     date = "2021.05.21",
-                    type = "싱글 | KPOP",
-                    Songs = ArrayList()
+                    type = "싱글 | KPOP"
+                    // Songs = ArrayList()  <-- [삭제] 이제 필요 없음!
                 )
             )
             add(
                 Album(
+                    id = 2, // [추가] 2번 앨범
                     title = "Lilac",
                     singer = "아이유 (IU)",
-                    coverImg = R.drawable.img_album_exp2,
+                    coverImg = R.drawable.img_album_lilac,
                     date = "2021.03.25",
-                    type = "정규 | KPOP",
-                    Songs = ArrayList()
+                    type = "정규 | KPOP"
                 )
             )
             add(
                 Album(
+                    id = 3, // [추가] 3번 앨범
                     title = "spring globe",
                     singer = "요네즈 켄시",
                     coverImg = R.drawable.img_album_globe,
                     date = "2024.04.10",
-                    type = "싱글 | JPOP",
-                    Songs = ArrayList()
+                    type = "싱글 | JPOP"
                 )
             )
-            add(
-                Album(
-                    title = "dandelion",
-                    singer = "우효 (Oohyo)",
-                    coverImg = R.drawable.img_album_dendelion,
-                    date = "2015.05.07",
-                    type = "정규 | Indie",
-                    Songs = ArrayList()
-                )
-            )
+
         }
     }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

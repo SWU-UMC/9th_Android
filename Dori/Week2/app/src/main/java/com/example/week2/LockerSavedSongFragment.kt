@@ -55,9 +55,37 @@ class LockerSavedSongFragment : Fragment() {
 
     private fun createDummySavedSongList(): ArrayList<Song> {
         return ArrayList<Song>().apply {
-            add(Song("제목 없음 (보관함)", "저장된 아티스트 1", trackNumber = 1, isPlaying = false))
-            add(Song("Saved Song 2", "저장된 아티스트 2", trackNumber = 2, isPlaying = false))
-            add(Song("Saved Song 3", "저장된 아티스트 3", trackNumber = 3, isPlaying = true))
+            add(
+                Song(
+                    title = "제목 없음 (보관함)",
+                    singer = "저장된 아티스트 1",
+                    coverImg = R.drawable.img_album_exp,
+                    isLike = true,
+                    albumIdx = 0,
+                    trackNumber = 1
+                )
+            )
+            add(
+                Song(
+                    title = "Saved Song 2",
+                    singer = "저장된 아티스트 2",
+                    coverImg = R.drawable.img_album_lilac,
+                    isLike = true,
+                    albumIdx = 0,
+                    trackNumber = 2
+                )
+            )
+            add(
+                Song(
+                    title = "Saved Song 3",
+                    singer = "저장된 아티스트 3",
+                    coverImg = R.drawable.img_album_globe,
+                    isPlaying = true,
+                    isLike = true,
+                    albumIdx = 0,
+                    trackNumber = 3
+                )
+            )
         }
     }
 

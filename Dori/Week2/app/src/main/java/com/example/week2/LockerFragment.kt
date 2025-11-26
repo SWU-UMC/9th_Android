@@ -1,5 +1,6 @@
 package com.example.week2
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -41,6 +42,11 @@ class LockerFragment : Fragment() {
                 tab, position ->
             tab.text = information[position]
         }.attach()
+
+        // 로그인 텍스트 클릭 리스너
+        binding.btnLogin.setOnClickListener {
+            startActivity(Intent(activity, LoginActivity::class.java))
+        }
     }
 
     override fun onDestroyView() {
