@@ -12,5 +12,7 @@ data class Album(
     var singer: String? = "",
     var coverImg: Int? = null,
     var date: String? = null,
-    var type: String? = null
+    var type: String? = null,
+
+    var isLike: Boolean = false
 )

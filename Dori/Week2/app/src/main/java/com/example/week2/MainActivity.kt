@@ -207,6 +207,13 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
 
+                R.id.lookFragment -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.main_fragmentContainer, LookAroundFragment())
+                        .commitAllowingStateLoss()
+                    return@setOnItemSelectedListener true
+                }
+
                 else -> false
             }
         }

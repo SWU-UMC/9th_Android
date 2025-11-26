@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.week2.databinding.FragmentLockerBinding
 import com.google.android.material.tabs.TabLayoutMediator
@@ -43,9 +44,12 @@ class LockerFragment : Fragment() {
             tab.text = information[position]
         }.attach()
 
-        // 로그인 텍스트 클릭 리스너
         binding.btnLogin.setOnClickListener {
-            startActivity(Intent(activity, LoginActivity::class.java))
+            // 1. 토스트 메시지 띄우기 (클릭 확인용)
+            Toast.makeText(requireContext(), "로그인 버튼 클릭됨! 👆", Toast.LENGTH_SHORT).show()
+
+            // 2. 화면 이동 시도
+            startActivity(Intent(requireContext(), LoginActivity::class.java))
         }
     }
 

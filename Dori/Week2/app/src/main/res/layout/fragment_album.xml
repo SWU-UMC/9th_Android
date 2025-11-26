@@ -33,7 +33,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/album_back_ib"/>
 
     <ImageButton
-        android:id="@+id/song_down_ib"
+        android:id="@+id/ivLike"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginEnd="15dp"
