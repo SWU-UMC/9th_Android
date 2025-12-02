@@ -54,12 +54,11 @@ class HomeFragment : Fragment() {
 
 
         albumDatas.apply {
-            add(Album(title = "Butter", singer = "방탄소년단 (BTS)", coverImg = R.drawable.img_album_exp, Songs = ArrayList()))
-            add(Album(title = "Lilac", singer = "아이유 (IU)", coverImg = R.drawable.img_album_exp2, Songs = ArrayList()))
-            add(Album(title = "spring globe", singer = "요네즈 켄시", coverImg = R.drawable.img_album_globe, Songs = ArrayList()))
-            add(Album(title = "dandelion", singer = "우효 (Oohyo)", coverImg = R.drawable.img_album_dendelion, Songs = ArrayList()))
-            add(Album(title = "2am", singer = "릴러말즈 (Leellamarz)", coverImg = R.drawable.img_album_2am, Songs = ArrayList()))
-            add(Album(title = "3am", singer = "로제 (Rose)", coverImg = R.drawable.img_album_3am, Songs = ArrayList()))
+            add(Album(id = 1, title = "Butter", singer = "방탄소년단 (BTS)", coverImg = R.drawable.img_album_exp))
+            add(Album(id = 2, title = "Lilac", singer = "아이유 (IU)", coverImg = R.drawable.img_album_lilac))
+            add(Album(id = 3, title = "spring globe", singer = "요네즈 켄시", coverImg = R.drawable.img_album_globe))
+            add(Album(id = 4, title = "2am", singer = "릴러말즈 (Leellamarz)", coverImg = R.drawable.img_album_2am))
+            add(Album(id = 5, title = "3am", singer = "로제 (Rose)", coverImg = R.drawable.img_album_3am))
         }
 
 
@@ -77,11 +76,18 @@ class HomeFragment : Fragment() {
 
             override fun onPlayButtonClick(album: Album) {
 
-                val firstSong = album.Songs.firstOrNull() ?:
-                Song(
-                    title = album.title ?: "제목",
-                    singer = album.singer ?: "가수"
 
+                val firstSong = Song(
+                    title = album.title ?: "제목 없음",
+                    singer = album.singer ?: "가수 없음",
+                    second = 0,
+                    playTime = 0,
+                    isPlaying = false,
+                    music = "",
+                    coverImg = album.coverImg,
+                    isLike = false,
+                    albumIdx = album.id,
+                    trackNumber = 1
                 )
 
                 (activity as MainActivity).updateMiniPlayer(firstSong)
@@ -96,7 +102,7 @@ class HomeFragment : Fragment() {
 
         val topBannerAdapter = BannerVPAdapter(this@HomeFragment)
         topBannerAdapter.addFragment(MainBannerFragment(R.drawable.img_first_album_default))
-        topBannerAdapter.addFragment(MainBannerFragment(R.drawable.img_album_dendelion)) // 더미 데이터 2
+        topBannerAdapter.addFragment(MainBannerFragment(R.drawable.img_album_lilac)) // 더미 데이터 2
         topBannerAdapter.addFragment(MainBannerFragment(R.drawable.img_album_2am)) // 더미 데이터 3
 
         binding.homePannelBackgroundIv.adapter = topBannerAdapter

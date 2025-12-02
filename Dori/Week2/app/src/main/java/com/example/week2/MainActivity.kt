@@ -87,12 +87,36 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        inputDummySongs()
+        inputDummySongs() // 노래 데이터 초기화
 
-
+        //저장된 ID가져오기
         val initialSongId = getSharedPreferences(SONG_PREFERENCE, MODE_PRIVATE).getInt("songId", 1)
         val songDB = SongDatabase.getInstance(this)!!
-        song = songDB.songDao().getSong(initialSongId)
+
+        val tempSong = songDB.songDao().getSong(initialSongId)
+
+        if (tempSong != null) {
+            song = tempSong
+        } else {
+            // 저장된 ID의 노래가 없으면 1번 노래를 다시 가져온다
+            val firstSong = songDB.songDao().getSong(1)
+            if (firstSong != null) {
+                song = firstSong
+            } else {
+                song = Song(
+                    title = "Lilac",
+                    singer = "아이유 (IU)",
+                    second = 0,
+                    playTime = 212,
+                    isPlaying = false,
+                    music = "music_lilac",
+                    coverImg = R.drawable.img_album_lilac,
+                    isLike = false,
+                    albumIdx = 0,
+                    trackNumber = 1
+                )
+            }
+        }
 
 
         if (MusicService.currentSong == null) {
@@ -142,7 +166,7 @@ class MainActivity : AppCompatActivity() {
                         val newSecond = (song.playTime * newProgressRatio).toInt()
 
 
-                        MusicService.setAndPlay(this@MainActivity, song, newSecond)
+                        MusicService.setAndPlay(this@MainActivity, song, newSecond, true)
 
 
                         val editor = getSharedPreferences(SONG_PREFERENCE, MODE_PRIVATE).edit()
@@ -183,6 +207,13 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
 
+                R.id.lookFragment -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.main_fragmentContainer, LookAroundFragment())
+                        .commitAllowingStateLoss()
+                    return@setOnItemSelectedListener true
+                }
+
                 else -> false
             }
         }
@@ -196,12 +227,36 @@ class MainActivity : AppCompatActivity() {
         val songId = spf.getInt("songId",1)
 
         val songDB = SongDatabase.getInstance(this)!!
-        song = songDB.songDao().getSong(songId)
+
+        val tempSong = songDB.songDao().getSong(songId)
+
+        if (tempSong != null) {
+            song = tempSong
+        } else {
+            val firstSong = songDB.songDao().getSong(1)
+            if (firstSong != null) {
+                song = firstSong
+            } else {
+                song = Song(
+                    title = "Lilac",
+                    singer = "아이유 (IU)",
+                    second = 0,
+                    playTime = 212,
+                    isPlaying = false,
+                    music = "music_lilac",
+                    coverImg = R.drawable.img_album_lilac,
+                    isLike = false,
+                    albumIdx = 0,
+                    trackNumber = 1
+                )
+            }
+        }
 
         val currentSecond = spf.getInt(CURRENT_SECOND_KEY, 0)
         val isPlayingState = spf.getBoolean(IS_PLAYING_KEY, false)
 
-        MusicService.setAndPlay(this, song, currentSecond)
+        MusicService.setAndPlay(this, song, currentSecond, false)
+
         if (!isPlayingState) MusicService.pause()
         Log.d("song ID", song.id.toString())
         updateMiniPlayer(song)
@@ -233,36 +288,59 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, "MiniPlayer Updated: ${song.title} - ${song.singer}", Toast.LENGTH_SHORT).show()
     }
 
-    private fun inputDummySongs(){
+    private fun inputDummySongs() {
         val songDB = SongDatabase.getInstance(this)!!
         val songs = songDB.songDao().getSongs()
 
+
         if (songs.isNotEmpty()) return
+
 
         songDB.songDao().insert(
             Song(
-                "Lilac",
-                "아이유 (IU)",
-                1,
-                212,
-                false,
-                "music_lilac",
-                R.drawable.img_album_exp2,
-                false,
+                title = "Lilac",
+                singer = "아이유 (IU)",
+                second = 0,
+                playTime = 200,
+                isPlaying = false,
+                music = "music_lilac",
+                coverImg = R.drawable.img_album_lilac,
+                isLike = false,
+                albumIdx = 1, // 1번 앨범
+                trackNumber = 1
             )
         )
+
         songDB.songDao().insert(
             Song(
-                "Butter",
-                "방탄소년단 (BTS)",
-                2,
-                180,
-                false,
-                "music_butter",
-                R.drawable.img_album_exp,
-                false,
+                title = "Flu",
+                singer = "아이유 (IU)",
+                second = 0,
+                playTime = 200,
+                isPlaying = false,
+                music = "music_lilac",
+                coverImg = R.drawable.img_album_3am,
+                isLike = false,
+                albumIdx = 1, // 1번 앨범
+                trackNumber = 2
             )
         )
+
+        songDB.songDao().insert(
+            Song(
+                title = "Butter",
+                singer = "방탄소년단 (BTS)",
+                second = 0,
+                playTime = 190,
+                isPlaying = false,
+                music = "music_butter",
+                coverImg = R.drawable.img_album_exp,
+                isLike = false,
+                albumIdx = 2, // 2번 앨범
+                trackNumber = 1
+            )
+        )
+
 
 
         val _songs = songDB.songDao().getSongs()

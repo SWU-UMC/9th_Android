@@ -13,9 +13,12 @@ object MusicService {
     var isPlaying: Boolean = false
 
 
-    fun setAndPlay(context: Context, song: Song, startSecond: Int = 0) {
-        if (currentSong?.id != song.id || mediaPlayer == null) {
 
+
+
+    fun setAndPlay(context: Context, song: Song, startSecond: Int = 0, shouldPlay: Boolean) {
+
+        if (currentSong?.id != song.id || mediaPlayer == null) {
             releaseMediaPlayer()
             currentSong = song
 
@@ -23,20 +26,24 @@ object MusicService {
             mediaPlayer = MediaPlayer.create(context, musicId)
         }
 
-
         val seekPosition = startSecond * 1000
         mediaPlayer?.seekTo(seekPosition)
 
-        // 재생 시작
-        mediaPlayer?.start()
-        isPlaying = true
+
+        if (shouldPlay) {
+            mediaPlayer?.start()
+            isPlaying = true
+        } else {
+            isPlaying = false
+        }
     }
 
 
     fun togglePlayPause(context: Context) {
         if (mediaPlayer == null && currentSong != null) {
 
-            setAndPlay(context, currentSong!!, getCurrentPosition() / 1000)
+
+            setAndPlay(context, currentSong!!, getCurrentPosition() / 1000, true)
             return
         }
 

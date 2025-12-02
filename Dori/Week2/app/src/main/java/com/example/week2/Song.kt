@@ -3,9 +3,10 @@ package com.example.week2
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-
 @Entity(tableName = "SongTable")
 data class Song(
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0,
     var title: String = "",
     var singer: String = "",
     var second: Int = 0,
@@ -14,8 +15,6 @@ data class Song(
     var music: String = "",
     var coverImg: Int? = null,
     var isLike: Boolean = false,
-    var trackNumber: Int = 1
-){
-    @PrimaryKey(autoGenerate = true) var id: Int = 0
-}
-
+    var albumIdx: Int = 0,
+    var trackNumber: Int = 0
+)

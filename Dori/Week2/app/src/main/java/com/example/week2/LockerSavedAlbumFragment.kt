@@ -14,6 +14,7 @@ class LockerSavedAlbumFragment : Fragment() {
 
     private var _binding: FragmentLockerSavedAlbumBinding? = null
     private val binding get() = _binding!!
+    lateinit var albumDB: SongDatabase // DB 연결 변수
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -21,79 +22,46 @@ class LockerSavedAlbumFragment : Fragment() {
     ): View? {
         _binding = FragmentLockerSavedAlbumBinding.inflate(inflater, container, false)
 
-        setupRecyclerView()
+        // DB 초기화
+        albumDB = SongDatabase.getInstance(requireContext())!!
 
         return binding.root
     }
 
-
-    private fun setupRecyclerView() {
-        val savedAlbums = createDummySavedAlbumList()
-
-        val savedAlbumRVAdapter = SavedAlbumRVAdapter(savedAlbums)
-
-
-        binding.lockSavedAlbumRv.adapter = savedAlbumRVAdapter
-
-        binding.lockSavedAlbumRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-
-        savedAlbumRVAdapter.setMyItemClickListener(object : SavedAlbumRVAdapter.MyItemClickListener {
-            override fun onPlayClick(album: Album) {
-                Log.d("LockerAlbumPlay", "Now playing: ${album.title}")
-            }
-
-            override fun onMoreClick(position: Int) {
-                savedAlbumRVAdapter.removeItem(position)
-                Log.d("LockerAlbumDelete", "Album at position $position deleted.")
-            }
-        })
+    override fun onStart() {
+        super.onStart()
+        initRecyclerview()
     }
 
+    private fun initRecyclerview() {
+        binding.lockSavedAlbumRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
-    private fun createDummySavedAlbumList(): ArrayList<Album> {
-        return ArrayList<Album>().apply {
 
-            add(
-                Album(
-                    title = "Butter",
-                    singer = "방탄소년단 (BTS)",
-                    coverImg = R.drawable.img_album_exp,
-                    date = "2021.05.21",
-                    type = "싱글 | KPOP",
-                    Songs = ArrayList()
-                )
-            )
-            add(
-                Album(
-                    title = "Lilac",
-                    singer = "아이유 (IU)",
-                    coverImg = R.drawable.img_album_exp2,
-                    date = "2021.03.25",
-                    type = "정규 | KPOP",
-                    Songs = ArrayList()
-                )
-            )
-            add(
-                Album(
-                    title = "spring globe",
-                    singer = "요네즈 켄시",
-                    coverImg = R.drawable.img_album_globe,
-                    date = "2024.04.10",
-                    type = "싱글 | JPOP",
-                    Songs = ArrayList()
-                )
-            )
-            add(
-                Album(
-                    title = "dandelion",
-                    singer = "우효 (Oohyo)",
-                    coverImg = R.drawable.img_album_dendelion,
-                    date = "2015.05.07",
-                    type = "정규 | Indie",
-                    Songs = ArrayList()
-                )
-            )
-        }
+        Thread {
+            val likedAlbums = albumDB.albumDao().getLikedAlbums()
+
+            activity?.runOnUiThread {
+                val savedAlbumRVAdapter = SavedAlbumRVAdapter(likedAlbums as ArrayList<Album>)
+                binding.lockSavedAlbumRv.adapter = savedAlbumRVAdapter
+                savedAlbumRVAdapter.setMyItemClickListener(object : SavedAlbumRVAdapter.MyItemClickListener {
+                    override fun onPlayClick(album: Album) {
+                        Log.d("LockerAlbumPlay", "Now playing: ${album.title}")
+                    }
+
+
+                    override fun onMoreClick(position: Int) {
+                        val album = likedAlbums[position]
+
+                        Thread {
+                            albumDB.albumDao().updateIsLikeById(false, album.id)
+                        }.start()
+
+                        savedAlbumRVAdapter.removeItem(position)
+                        Log.d("LockerAlbumDelete", "Album deleted: ${album.title}")
+                    }
+                })
+            }
+        }.start()
     }
 
     override fun onDestroyView() {

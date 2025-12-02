@@ -17,7 +17,7 @@ class AlbumSongFragment : Fragment() {
     private var _binding: FragmentAlbumSongBinding? = null
     private val binding get() = _binding!!
     private var receivedAlbum: Album? = null
-
+    private val gson: Gson = Gson()
     private var isMixOn = false
 
     override fun onCreateView(
@@ -30,39 +30,38 @@ class AlbumSongFragment : Fragment() {
         val albumJson = arguments?.getString("album")
         if (albumJson != null) {
             val type = object : TypeToken<Album>() {}.type
-
-            receivedAlbum = Gson().fromJson(albumJson, type)
-
-
-            Log.d("AlbumSong", "Received Album Title: ${receivedAlbum?.title}")
+            receivedAlbum = gson.fromJson(albumJson, type)
         }
 
-
+        // 2. 리사이클러뷰 연결 (여기서 DB 조회할 것임)
         setupRecyclerView()
-        setupMixToggle()
 
         return binding.root
     }
 
     private fun setupRecyclerView() {
 
-        val songList = receivedAlbum?.Songs ?: createDummySongList()
+        var songList = arrayListOf<Song>()
+        val songDB = SongDatabase.getInstance(requireContext())!!
 
+        if (receivedAlbum != null) {
+            // DB에서 이 앨범(albumIdx)에 속한 노래들만 가져오기
+            val songsFromDB = songDB.songDao().getSongsInAlbum(receivedAlbum!!.id)
+            songList.addAll(songsFromDB)
+        }
 
+        // 만약 DB에 노래가 없으면 더미 데이터라도 보여주기 (테스트용)
+        if (songList.isEmpty()) {
+            songList = createDummySongList()
+        }
 
         val songRVAdapter = SongRVAdapter(songList)
         binding.fragmentAlbumSongRv.adapter = songRVAdapter
-
-
-
         binding.fragmentAlbumSongRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-
-
 
         songRVAdapter.setMyItemClickListener(object : SongRVAdapter.MyItemClickListener {
             override fun onSongClick(song: Song) {
-
-                Log.d("SongClick", "Now playing: ${song.title}")
+                // 여기서 노래 재생 등 처리
             }
         })
     }
@@ -70,9 +69,9 @@ class AlbumSongFragment : Fragment() {
 
     private fun createDummySongList(): ArrayList<Song> {
         return ArrayList<Song>().apply {
-            add(Song("제목 없음 (더미)", "가수 정보 없음", trackNumber = 1))
-            add(Song("노래 2", "더미 아티스트", trackNumber = 2))
-            add(Song("노래 3", "더미 아티스트", trackNumber = 3))
+            add(Song(1, "가수 정보 없음", trackNumber = 1))
+            add(Song(2, "더미 아티스트", trackNumber = 2))
+            add(Song(3, "더미 아티스트", trackNumber = 3))
         }
     }
 

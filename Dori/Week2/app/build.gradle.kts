@@ -43,7 +43,7 @@ android {
 dependencies {
 
 
-    val roomVersion = "2.4.1"
+    val roomVersion = "2.6.1"
     implementation("me.relex:circleindicator:2.1.6")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation(libs.androidx.core.ktx)
